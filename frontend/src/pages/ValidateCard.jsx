@@ -10,11 +10,11 @@ const ValidateCard = () => {
     const [loading, setLoading] = useState(false)
     const [discount, setDiscount] = useState(null)
 
-async function validateByQR(input){
+async function validateByQR(){
     try{
         setLoading(true)
-        const parsed = JSON.parse(qrInput || input)
-        const response = await fetch("http://localhost:5000/cards/validate",{
+        const parsed = JSON.parse(qrInput)
+        const response = await fetch("http://localhost:8000/coupons/validate",{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -33,7 +33,7 @@ async function validateByQR(input){
 }
 
 async function validateByToken(){
-    const response = await fetch("http://localhost:5000/cards/validate",{
+    const response = await fetch("http://localhost:8000/coupons/validate",{
         method: "POST",
         headers: {
             "Content-Type": "application/json"

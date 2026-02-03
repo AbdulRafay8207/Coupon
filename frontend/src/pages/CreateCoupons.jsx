@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const CreateCard = () => {
+const CreateCoupons = () => {
     const [formData, setFormData] = useState({
         discountValue: "",
         area: "",
@@ -15,7 +15,7 @@ const CreateCard = () => {
     const handleSubmit = async (e)=>{
         e.preventDefault()
         try{
-            const response = await fetch("http://localhost:5000/cards/create", {
+            const response = await fetch("http://localhost:8000/coupons/create", {
                 method: "POST",
                 headers:{
                     "Content-Type":"application/json"
@@ -57,4 +57,4 @@ const CreateCard = () => {
   )
 }
 
-export default CreateCard
+export default CreateCoupons

@@ -7,7 +7,7 @@ const Dashboard = () => {
     
     
     async function fetchCards () {
-        const response = await fetch("http://localhost:5000/cards",{
+        const response = await fetch("http://localhost:8000/cards",{
         })
         const data = await response.json()
         setCards(data.Cards)
@@ -29,7 +29,7 @@ const Dashboard = () => {
 
         if(!confirmCancel) return
         
-        await fetch("http://localhost:5000/cards/cancel",{
+        await fetch("http://localhost:8000/cards/cancel",{
             method: "POST",
             headers:{
                 "Content-Type":"application/json",
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
         if(!confirmCancelArea) return
 
-        const response = await fetch("http://localhost:5000/cards/cancel",{
+        const response = await fetch("http://localhost:8000/cards/cancel",{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

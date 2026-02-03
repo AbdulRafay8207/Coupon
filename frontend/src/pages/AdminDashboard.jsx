@@ -2,23 +2,30 @@ import { useEffect, useState } from "react"
 import { QRCodeCanvas } from "qrcode.react"
 
 const Dashboard = () => {
-  const [cards, setCards] = useState([])
-  const [status, setStatus] = useState("active")
+  const [coupons, setCoupons] = useState([])
+  const [status, setStatus] = useState("all")
   const [loading, setLoading] = useState(false)
   const [cancelArea, setCancelArea] = useState("")
 
   useEffect(() => {
-    fetchCards(status)
+    fetchCoupons(status)
   }, [status])
 
-  async function fetchCards(type) {
+  function getStatus(coupon){
+    if(coupon.isCancelled) return "Cancelled"
+    if(coupon.isUsed) return "Used"
+    if(new Date(coupon.validTo) < new Date()) return "Expired"
+    return "Active"
+  }
+
+  async function fetchCoupons(type) {
     setLoading(true)
     try {
       const res = await fetch(
-        `http://localhost:5000/cards/status?type=${type}`
+        `http://localhost:8000/coupons/status?type=${type}`
       )
       const data = await res.json()
-      setCards(data.cards)
+      setCoupons(data.coupon)
     } catch (err) {
       console.error(err)
     } finally {
@@ -27,23 +34,23 @@ const Dashboard = () => {
   }
 
   async function cancelCard(token) {
-    if (!window.confirm(`Cancel card ${token}?`)) return
+    if (!window.confirm(`Cancel coupon ${token}?`)) return
 
-    await fetch("http://localhost:5000/cards/cancel", {
+    await fetch("http://localhost:8000/coupons/cancel", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token })
     })
 
-    fetchCards(status)
+    fetchCoupons(status)
   }
 
   async function cancelAreaCards() {
     if (!cancelArea) return alert("Enter area")
 
-    if (!window.confirm(`Cancel all cards in ${cancelArea}?`)) return
+    if (!window.confirm(`Cancel all coupons in ${cancelArea}?`)) return
 
-    const res = await fetch("http://localhost:5000/cards/cancel", {
+    const res = await fetch("http://localhost:8000/coupons/cancel", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ area: cancelArea })
@@ -52,7 +59,7 @@ const Dashboard = () => {
     const data = await res.json()
     alert(data.message)
     setCancelArea("")
-    fetchCards(status)
+    fetchCoupons(status)
   }
 
   return (
@@ -70,7 +77,7 @@ const Dashboard = () => {
       </div>
 
       {/* Status Filters */}
-      {["active", "expired"].map((s) => (
+      {/* {["active", "expired"].map((s) => (
         <button
           key={s}
           onClick={() => setStatus(s)}
@@ -81,10 +88,18 @@ const Dashboard = () => {
         >
           {s.toUpperCase()}
         </button>
-      ))}
+      ))} */}
+      <select value={status} onChange={(e)=> setStatus(e.target.value)}>
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="expired">Expired</option>
+        <option value="cancelled">Cancelled</option>
+        <option value="used">Used</option>
+
+      </select>
 
       <h3>
-        Showing {status.toUpperCase()} cards: {cards.length}
+        Showing {status.toUpperCase()} Coupons: {coupons.length}
       </h3>
 
       {loading ? (
@@ -93,7 +108,7 @@ const Dashboard = () => {
         <table border={1} cellPadding={5}>
           <thead>
             <tr>
-              <th>QRID</th>
+              <th>ID</th>
               <th>Token</th>
               <th>Secret</th>
               <th>Discount</th>
@@ -102,37 +117,37 @@ const Dashboard = () => {
               <th>Valid To</th>
               <th>Status</th>
               <th>QR</th>
-              {status === "expired"? "": <th>Action</th>}
+              {status !== "expired" && status !== "cancelled" && status !== "used" && (<th>Action</th>)}
             </tr>
           </thead>
           <tbody>
-            {cards.map((card) => (
-              <tr key={card.qrid}>
-                <td>{card.qrid}</td>
-                <td>{card.token}</td>
-                <td>{card.secret}</td>
-                <td>{card.discountValue}</td>
-                <td>{card.area}</td>
-                <td>{card.validFrom}</td>
-                <td>{card.validTo}</td>
-                <td>{status.toUpperCase()}</td>
+            {coupons.map((coupon) => (
+              <tr key={coupon._id}>
+                <td>{coupon._id}</td>
+                <td>{coupon.token}</td>
+                <td>{coupon.secret}</td>
+                <td>{coupon.discountValue}</td>
+                <td>{coupon.area}</td>
+                <td>{coupon.validFrom}</td>
+                <td>{coupon.validTo}</td>
+                <td>{getStatus(coupon)}</td>
                 <td>
                   <QRCodeCanvas
                     size={80}
                     value={JSON.stringify({
-                      qrid: card.qrid,
-                      token: card.token,
-                      secret: card.secret
+                      id: coupon._id,
+                      token: coupon.token,
+                      secret: coupon.secret
                     })}
                   />
                 </td>
-                <td>
-                  {status === "active" && (
-                    <button onClick={() => cancelCard(card.token)}>
-                      Cancel
-                    </button>
+                  {getStatus(coupon) === "Active" && (
+                    <td>
+                      <button onClick={() => cancelCard(coupon.token)}>
+                       Cancel
+                      </button>
+                    </td>
                   )}
-                </td>
               </tr>
             ))}
           </tbody>
