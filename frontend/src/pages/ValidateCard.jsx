@@ -1,4 +1,5 @@
 import { useState } from "react"
+import getAuthHeader from "../components/GetAuthHeader"
 // import { QrReader } from "react-qr-reader";
 
 
@@ -16,14 +17,16 @@ async function validateByQR(){
         const parsed = JSON.parse(qrInput)
         const response = await fetch("http://localhost:8000/coupons/validate",{
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: getAuthHeader(),
             body: JSON.stringify(parsed)
         })
         const data = await response.json()
         setResult(data.message)
         setDiscount(data.discount || null)
+        if(response.status == 401){
+        navigate("/login")
+        return
+      }
 
     }catch(err){
         setResult("Invalid QR data")
@@ -35,13 +38,15 @@ async function validateByQR(){
 async function validateByToken(){
     const response = await fetch("http://localhost:8000/coupons/validate",{
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: getAuthHeader(),
         body: JSON.stringify({token, secret})
     })
     const data = await response.json()
     setResult(data.message)
+    if(response.status == 401){
+        navigate("/login")
+        return
+      }
 }
 
     return (

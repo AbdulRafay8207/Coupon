@@ -15,20 +15,29 @@ const handleSubmit = async (e)=>{
   
   try{
     const response = await fetch("http://localhost:8000/login",{
-      method: "POST",   
+      method: "POST",
       headers:{
         "Content-Type": "application/json"
       },
       body: JSON.stringify({email,password})
     })
     const data = await response.json()
-    setMessage(data.message)
-    // console.log(data.user);
-    
-    if(data.user === null) return
+    setMessage(data.message)   
+  
+    // if(data.user === null) return
     console.log(message);
-    if(response.ok){
-      navigate("/dashboard")
+    console.log(data);
+    
+    if(data.uid){
+      const payLoad = JSON.parse(atob(data.uid.split(".")[1]))
+      localStorage.setItem("role", payLoad.role)
+      localStorage.setItem("token",data.uid)
+      if (payLoad.role === "admin") {
+    navigate("/dashboard")
+  } else {
+    navigate("/validate")
+  }
+
     }
     
   }catch(err){

@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react"
 import { QRCodeCanvas } from "qrcode.react"
+import { useNavigate } from "react-router"
+import getAuthHeader from "../components/GetAuthHeader"
 
 const Dashboard = () => {
+  const navigate = useNavigate()
+
+  // const [message, setMessage] = useState(null)
   const [coupons, setCoupons] = useState([])
   const [status, setStatus] = useState("all")
   const [loading, setLoading] = useState(false)
@@ -10,6 +15,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchCoupons(status)
   }, [status])
+
 
   function getStatus(coupon){
     if(coupon.isCancelled) return "Cancelled"
@@ -22,10 +28,19 @@ const Dashboard = () => {
     setLoading(true)
     try {
       const res = await fetch(
-        `http://localhost:8000/coupons/status?type=${type}`
+        `http://localhost:8000/coupons/status?type=${type}`,
+        {
+          headers: getAuthHeader()
+        },
       )
       const data = await res.json()
-      setCoupons(data.coupon)
+      // setMessage(data.message)
+      setCoupons(data.coupon || [])
+      
+      if(res.status == 401){
+        navigate("/login")
+        return
+      }
     } catch (err) {
       console.error(err)
     } finally {
@@ -36,12 +51,17 @@ const Dashboard = () => {
   async function cancelCard(token) {
     if (!window.confirm(`Cancel coupon ${token}?`)) return
 
-    await fetch("http://localhost:8000/coupons/cancel", {
+    const res = await fetch("http://localhost:8000/coupons/cancel", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeader(),
       body: JSON.stringify({ token })
     })
-
+    const data = await res.json()
+    // setMessage(data.message)
+    if(res.status == 401){
+        navigate("/login")
+        return
+      }
     fetchCoupons(status)
   }
 
@@ -52,11 +72,17 @@ const Dashboard = () => {
 
     const res = await fetch("http://localhost:8000/coupons/cancel", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeader(),
       body: JSON.stringify({ area: cancelArea })
     })
 
+
     const data = await res.json()
+    // setMessage(data.message)
+    if(res.status == 401){
+        navigate("/login")
+        return
+      }
     alert(data.message)
     setCancelArea("")
     fetchCoupons(status)
@@ -77,18 +103,6 @@ const Dashboard = () => {
       </div>
 
       {/* Status Filters */}
-      {/* {["active", "expired"].map((s) => (
-        <button
-          key={s}
-          onClick={() => setStatus(s)}
-          style={{
-            marginRight: 5,
-            fontWeight: status === s ? "bold" : "normal"
-          }}
-        >
-          {s.toUpperCase()}
-        </button>
-      ))} */}
       <select value={status} onChange={(e)=> setStatus(e.target.value)}>
         <option value="all">All</option>
         <option value="active">Active</option>
@@ -99,7 +113,7 @@ const Dashboard = () => {
       </select>
 
       <h3>
-        Showing {status.toUpperCase()} Coupons: {coupons.length}
+        Showing {status.toUpperCase()} Coupons: {coupons?.length || 0}
       </h3>
 
       {loading ? (
@@ -141,13 +155,16 @@ const Dashboard = () => {
                     })}
                   />
                 </td>
-                  {getStatus(coupon) === "Active" && (
+                  {/* {getStatus(coupon) === "Active" && (
                     <td>
                       <button onClick={() => cancelCard(coupon.token)}>
                        Cancel
                       </button>
                     </td>
-                  )}
+                  )} */}
+                  <td>
+                    <button disabled={getStatus(coupon) !== "Active"} onClick={() => cancelCard(coupon.token)}>Cancel</button>
+                  </td>
               </tr>
             ))}
           </tbody>

@@ -1,6 +1,9 @@
 import { useState } from "react"
+import { useNavigate } from "react-router"
+import getAuthHeader from "../components/GetAuthHeader"
 
 const CreateCoupons = () => {
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         discountValue: "",
         area: "",
@@ -17,14 +20,16 @@ const CreateCoupons = () => {
         try{
             const response = await fetch("http://localhost:8000/coupons/create", {
                 method: "POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
+                headers: getAuthHeader(),
                 body:JSON.stringify(formData)
             })
             const data = await response.json()
             setMessage(data.message)
             console.log(data);
+            if(response.status == 401){
+                navigate("/login")
+                return
+            }
         }catch(error){
             console.error("error",error)
         }
