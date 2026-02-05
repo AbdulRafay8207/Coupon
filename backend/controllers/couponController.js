@@ -3,9 +3,13 @@ const coupon = require("../models/CouponsModel")
 // Generating coupons----------------------------------------------------------------------------------------
 
 async function generateCoupon(req,res) {
-    const {discountValue, area, validFrom, validTo} = req.body
-    if(!discountValue || !area || !validFrom || !validTo){
+    const {discountValue, area, validFrom, validTo, discountType, services, quantity} = req.body
+    if(!discountValue || !area || !validFrom || !validTo || !discountType || !services || !quantity){
         return res.send({message: "all fields are required!"})
+    }
+
+    if(discountType === "service" && (services.length === 0 || services.every(s => s.trim() === ""))){
+        return res.status(400).json({message: "Please add service list"})
     }
     function generateSecretCode(length = 14){
         let result = ""
@@ -16,18 +20,24 @@ async function generateCoupon(req,res) {
         return result.toUpperCase()
     }
 
-    const secretCode = generateSecretCode()
+    const coupons = []
 
-    const result = await coupon.create({
-        secret: secretCode,
+    for(let i = 0; i < quantity; i++){
+        coupons.push({
+        secret: generateSecretCode(),
         discountValue: discountValue,
+        discountType: discountType,
+        services: services,
         area: area,
         validFrom: validFrom,
         validTo: validTo,
         isUsed: false,
         isCancelled: false,
         usedAt: ""
-    })
+        })
+    }
+    const result = await coupon.insertMany(coupons)
+
     console.log({message: "successfully created", resut: result});
     return res.status(200).json({message: "successfully created", coupon: result})
 }
@@ -37,7 +47,7 @@ async function generateCoupon(req,res) {
 async function validateCoupon(req,res) {
     const {id,token,secret} = req.body
     const allCoupons = await coupon.find({})
-    const filteredCoupon = allCoupons.find(c => c._id === id || (c.token === token && c.secret === secret))
+    const filteredCoupon = allCoupons.find(c => c._id.toString() === id || (c.token === token && c.secret === secret))
 
 
     if(!filteredCoupon){
@@ -155,10 +165,40 @@ async function allCoupons(req,res) {
     res.json({message: "Here are all cards ", count: allCoupon.length, coupon: allCoupon})
 }
 
+// Search By Area------------------------------------------------------------------------------------------------------------------------------------------------------
+
+async function searchByArea(req,res) {
+    const {searchByArea,status} = req.body
+    if(!searchByArea) return res.status(400).json({message: "Enter Area"})
+    const today = new Date()
+    let filter = {
+        area: searchByArea
+    }
+    if(status === "active"){
+        filter.isCancelled = false
+        filter.isUsed = false
+        filter.validTo = {$gte: today}
+    } else if(status === "expired"){
+        filter.isCancelled = false
+        filter.isUsed = false
+        filter.validTo = {$lt: today}
+    } else if (status === "cancelled"){
+        filter.isCancelled = true
+    } else if (status === "used"){
+        filter.isUsed = false
+    }
+
+    const allCouponsByArea = await coupon.find(filter)
+
+    if(allCouponsByArea.length === 0) return res.status(400).json({message: "No area found"})
+    res.json({message: "Found area", couponsByArea: allCouponsByArea})
+}
+
 module.exports = {
     generateCoupon,
     validateCoupon,
     cancelCoupon,
     couponStatus,
-    allCoupons
+    allCoupons,
+    searchByArea
 }

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { API_BASE_URL } from "../config"
 import getAuthHeader from "../components/GetAuthHeader"
 
 const CreateLab = () => {
@@ -16,7 +17,7 @@ const CreateLab = () => {
     const handleSubmit = async (e)=>{
         e.preventDefault()
 
-        const response = await fetch("http://localhost:8000/create-lab",{
+        const response = await fetch(`${API_BASE_URL}/create-lab`,{
             method: "POST",
             headers: getAuthHeader(),
             body: JSON.stringify(form)

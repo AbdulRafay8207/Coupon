@@ -1,7 +1,6 @@
 const express = require("express")
 const cors = require("cors")
 const cookieParser = require("cookie-parser")
-// const {v4: uuidv4} = require("uuid")
 
 const couponsRoute = require("./routes/couponRouter")
 const userRoute = require("./routes/userRouter")
@@ -14,8 +13,9 @@ const {restrictLoggedInUserOnly} = require("./middleware/authMiddleware")
 const dataFilePath = path.join(__dirname,"./db.json")
 
 const app = express()
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: true,  // allow all origins (dev only)
   credentials: true
 }));
 app.use(express.json())

@@ -15,6 +15,15 @@ const couponSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    discountType: {
+        type: String,
+        enum: ["flat", "service"],
+        default: "flat"
+    },
+    services : {
+        type: [String],
+        default: []
+    },
     area: {
         type: String,
         required: true

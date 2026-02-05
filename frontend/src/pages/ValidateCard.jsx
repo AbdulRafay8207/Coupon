@@ -1,5 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { Html5QrcodeScanner } from "html5-qrcode";
 import getAuthHeader from "../components/GetAuthHeader"
+import { API_BASE_URL } from "../config";
 // import { QrReader } from "react-qr-reader";
 
 
@@ -11,11 +13,54 @@ const ValidateCard = () => {
     const [loading, setLoading] = useState(false)
     const [discount, setDiscount] = useState(null)
 
+    useEffect(() => {
+    const scanner = new Html5QrcodeScanner(
+      "reader",
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      false
+    );
+
+    scanner.render(
+      async (decodedText) => {
+        try {
+          const parsed = JSON.parse(decodedText);
+
+          const response = await fetch(
+            `${API_BASE_URL}/coupons/validate`,
+            {
+              method: "POST",
+              headers: getAuthHeader(),
+              body: JSON.stringify(parsed)
+            }
+          );
+
+          const data = await response.json();
+          setResult(data.message);
+          setDiscount(data.discountValue || null);
+
+          scanner.clear(); // stop scanning after success
+        } catch (err) {
+          setResult("Invalid QR code");
+        }
+      },
+      (error) => {
+        // ignore scan errors
+      }
+    );
+
+    return () => {
+      scanner.clear().catch(() => {});
+    };
+  }, []);
+
 async function validateByQR(){
     try{
         setLoading(true)
         const parsed = JSON.parse(qrInput)
-        const response = await fetch("http://localhost:8000/coupons/validate",{
+        const response = await fetch(`${API_BASE_URL}/coupons/validate`,{
             method: "POST",
             headers: getAuthHeader(),
             body: JSON.stringify(parsed)
@@ -36,7 +81,7 @@ async function validateByQR(){
 }
 
 async function validateByToken(){
-    const response = await fetch("http://localhost:8000/coupons/validate",{
+    const response = await fetch(`${API_BASE_URL}/coupons/validate`,{
         method: "POST",
         headers: getAuthHeader(),
         body: JSON.stringify({token, secret})
@@ -53,20 +98,8 @@ async function validateByToken(){
         <div>
         <h1>ValidateCoupon</h1>
         <h3>Scan QR</h3>
-        {/* <QrReader onResult={(result,error)=>{
-            if(!!result){
-                setQrInput(result?.text)
-                validateByQR(result?.text)
-            }
-            if(!!error){
-                console.log(error);
-            }
-        }}
-            constraints={{ facingMode: "environment" }}
-            style={{ width: "300px" }}
-        /> */}
 
-        <textarea
+        {/* <textarea
         rows="5"
         placeholder="Past scanned QR data"
         value={qrInput}
@@ -74,7 +107,14 @@ async function validateByToken(){
         />
         <br/>
         <button onClick={validateByQR}>Validate QR</button>
-        <br />
+        <br />*/} 
+        <div> 
+      <div id="reader" style={{ width: "300px" }} />
+
+      {/* <h3>Result</h3>
+      <p>{result}</p> */}
+      {discount && <p><strong>Discount:</strong> {discount}</p>}
+    </div>
 
         <h3>Manual Token</h3>
         <input type="text" placeholder="Enter Token" value={token} onChange={(e)=> setToken(e.target.value)} />
@@ -85,7 +125,7 @@ async function validateByToken(){
 
         <h3>RESULT</h3>
         <p>{result}</p>
-        {discount && <p><Strong>Discount:</Strong> {discount}</p>}
+        {discount && <p><strong>Discount:</strong> {discount}</p>}
     </div>
   )
 }

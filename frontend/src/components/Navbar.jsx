@@ -8,6 +8,7 @@ const Navbar = () => {
           <>
             <NavLink className={"Nav"} to={"/dashboard"}>AdminDashboard</NavLink>
             <NavLink className={"Nav"} to={"/create"}>Create</NavLink>
+            <NavLink className={"Nav"} to={"/create-lab"}>Add Lab-tech</NavLink>
           </>
         )}
         {(role === "admin" || role === "lab") && (
