@@ -14,6 +14,9 @@ import Login from "./pages/Login"
 import ProtectedRoute from "./components/ProtectedRoute"
 import RoleWiseProtectedRoute from "./components/RoleWiseProtectedRoute"
 import CreateLab from "./pages/CreateLab"
+import PublicRoute from "./components/PublicRoute"
+import DashboardLayout from "./layouts/DashboardLayout"
+// import "./style/global.css"
 
 const App = () => {
   const router = createBrowserRouter(
@@ -21,14 +24,16 @@ const App = () => {
       <Route>
 
         {/* PUBLIC */}
-        <Route index element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route element={<PublicRoute/>}>
+          <Route index element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+        </Route>
 
         {/* AUTH REQUIRED */}
         <Route element={<ProtectedRoute />}>
           
           {/* NAVBAR FOR ALL LOGGED USERS */}
-          <Route element={<Navbar />}>
+          <Route element={<DashboardLayout />}> 
 
             {/* ADMIN ONLY */}
             <Route element={<RoleWiseProtectedRoute allowedRole={["admin"]} />}>
@@ -40,7 +45,7 @@ const App = () => {
             {/* ADMIN + LAB */}
             <Route element={<RoleWiseProtectedRoute allowedRole={["admin", "lab"]} />}>
               <Route path="/validate" element={<ValidateCard />} />
-            </Route>
+            </Route>  
 
           </Route>
         </Route>

@@ -1,0 +1,215 @@
+/* =======================
+   1. VARIABLES
+======================= */
+:root {
+  /* Base colors */
+  --white: #ffffff;
+  --cool-white: #f8fafc;
+  --bg-main: #f4f8fc;
+
+  /* Blues */
+  --blue-100: #e6f2ff;
+  --blue-200: #cfe5ff;
+  --blue-300: #99c9ff;
+  --blue-400: #66adff;
+  --blue-500: #3b82f6; /* primary */
+  --blue-600: #2563eb;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  /* Status */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+
+  /* Spacing & radius */
+  --gap: 1rem;
+  --radius: 10px;
+
+  /* Font */
+  --font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =======================
+   2. GLOBAL BASE STYLES
+======================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--blue-300);
+  color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: var(--gap);
+}
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: var(--gap);
+}
+
+a {
+  color: var(--blue-500);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* =======================
+   3. CONTAINERS & CARDS
+======================= */
+.container {
+  width: min(95%, 1200px);
+  margin: 20px auto;
+  background-color: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.card {
+  background-color: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* =======================
+   4. BUTTONS
+======================= */
+button {
+  border: none;
+  border-radius: 1000px;
+  padding: 0.8em 2em;
+  background-color: var(--blue-400);
+  color: var(--white);
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: var(--blue-500);
+}
+
+button:disabled {
+  background-color: var(--blue-200);
+  cursor: not-allowed;
+}
+
+/* =======================
+   5. FORMS (inputs, selects, textarea)
+======================= */
+input, select, textarea {
+  padding: 0.8em 1em;
+  border-radius: var(--radius);
+  border: 2px solid var(--white);
+  background-color: var(--blue-100);
+  font-family: inherit;
+  transition: 0.2s;
+}
+
+input:hover, select:hover, textarea:hover {
+  border-color: var(--blue-300);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--blue-500);
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* =======================
+   6. STATUS MESSAGES
+======================= */
+.error-message {
+  color: var(--danger);
+  font-weight: bold;
+}
+
+.success-message {
+  color: var(--success);
+  font-weight: bold;
+}
+
+/* =======================
+   7. TABLES
+======================= */
+table {
+  width: 100vh;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid var(--blue-200);
+  text-align: center;
+}
+
+th {
+  background-color: var(--blue-100);
+}
+
+/* Table buttons */
+table td button {
+  padding: 5px 10px;
+  border-radius: var(--radius);
+  border: none;
+  background-color: var(--blue-400);
+  color: var(--white);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+table td button:hover {
+  background-color: var(--blue-500);
+}
+
+/* Table status labels */
+.status-active { color: var(--success); font-weight: bold; }
+.status-cancelled { color: var(--danger); font-weight: bold; }
+.status-expired { color: var(--warning); font-weight: bold; }
+.status-used { color: var(--text-secondary); font-weight: bold; }
+
+/* =======================
+   8. UTILITY CLASSES
+======================= */
+.mt-1 { margin-top: var(--gap); }
+.mb-1 { margin-bottom: var(--gap); }
+.text-center { text-align: center; }
+
+/* =======================
+   9. RESPONSIVE
+======================= */
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    padding: 10px;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,48 @@
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: var(--white);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+#sidebar.close {
+  width: 60px;
+  overflow: hidden;
+}
+
+#sidebar ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin-top: 20px;
+}
+
+#sidebar ul li a {
+  display: block;
+  padding: 10px;
+  border-radius: var(--radius);
+}
+
+#sidebar ul li a.active,
+#sidebar ul li a:hover {
+  background-color: var(--blue-100);
+  color: var(--blue-500);
+}
+
+#sidebar button {
+  margin-top: auto;
+}
+
+/* Adjust logo size */
+#sidebar .logo {
+  width: 120px;
+  margin: 10px auto;
+}

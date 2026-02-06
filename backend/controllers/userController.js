@@ -2,11 +2,12 @@ const User = require("../models/UsersModel")
 const {setUser} = require("../service/auth")
 
 async function handleUserSignIn(req,res){
-    const {username, email, password} = req.body
+    const {username, email, password,confirmPassword} = req.body
     await User.create({
         username,
         email,
-        password
+        password,
+        confirmPassword,
     })
     return res.json({message: "Successfully Signin"})
 }
