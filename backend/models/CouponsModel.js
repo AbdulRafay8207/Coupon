@@ -3,8 +3,6 @@ const mongoose = require("mongoose")
 const couponSchema = mongoose.Schema({
     token: {
         type: String,
-        default: () => `TKN-${new mongoose.Types.ObjectId()}`,
-        unique: true
     },
     secret: {
         type: String,
@@ -24,7 +22,7 @@ const couponSchema = mongoose.Schema({
         type: [String],
         default: []
     },
-    area: {
+    sponsoredName: {
         type: String,
         required: true
     },
@@ -36,6 +34,10 @@ const couponSchema = mongoose.Schema({
         type: Date,
         required: true
     },
+    // tokenSequence: {
+    //     type: String,
+    //     required: true
+    // },
     isUsed: {
         type: Boolean,
         required: true

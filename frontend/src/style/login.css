@@ -1,4 +1,4 @@
-/* :root {
+:root {
   
   --white: #ffffff;
   --cool-white: #f8fafc;
@@ -52,7 +52,7 @@ h1{
     font-weight: 900;
     text-transform: uppercase;
 }
-form{
+.login-form{
     width: min(400px, 100%);
     margin-top: 20px;
     margin-bottom: 50px;
@@ -61,12 +61,12 @@ form{
     align-items: center;
     gap: 10px;
 }
-form > div {
+.login-form > div {
     width: 100%;
     display: flex;
     justify-content: center;
 }
-form label {
+.login-form label {
     flex-shrink: 0;
     height: 50px;
     width: 50px;
@@ -76,7 +76,7 @@ form label {
     justify-content: center;
     align-items: center;
 }
-form input{
+.login-form input{
     flex-grow: 1;
     box-sizing: border-box;
     min-width: 0;
@@ -89,17 +89,17 @@ form input{
     background-color: var(--blue-100);
     transition: 150ms ease;
 }
-form input:hover{
+.login-form input:hover{
     border-color: var(--blue-300);
 }
-form input:focus{
+.login-form input:focus{
     outline: none;
     border-color: var(--blue-500);
 }
-div:has(input:focus) > label{
+div:has(.login-form-input:focus) > label{
     background-color: var(--blue-500);
 }
-form button {
+.login-form button {
     margin-top: 10px;
     border: none;
     border-radius: 1000px;
@@ -111,10 +111,10 @@ form button {
     cursor: pointer;
     transition: 150ms ease;
 }
-form button:hover{
+.login-form button:hover{
     background-color: var(--blue-500);
 }
-form button:focus{
+.login-form button:focus{
     outline: none;
     background-color: var(--blue-500);
 }
@@ -131,12 +131,12 @@ form button:focus{
         border-radius: 0;
     }
 }
-form div.incorrect label{
+.login-form div.incorrect label{
     background-color: var(--danger);
 }
-form div.incorrect input{
+.login-form div.incorrect input{
     border-color: var(--danger);
 }
 .error-message{
     color: var(--danger);
-} */
+}

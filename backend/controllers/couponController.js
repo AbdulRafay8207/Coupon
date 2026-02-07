@@ -3,8 +3,8 @@ const coupon = require("../models/CouponsModel")
 // Generating coupons----------------------------------------------------------------------------------------
 
 async function generateCoupon(req,res) {
-    const {discountValue, area, validFrom, validTo, discountType, services, quantity} = req.body
-    if(!discountValue || !area || !validFrom || !validTo || !discountType || !services || !quantity){
+    const {discountValue, validFrom, validTo, discountType, services, quantity, sponsoredName, tokenSequence} = req.body
+    if(!discountValue || !sponsoredName || !validFrom || !validTo || !discountType || !services || !quantity || !tokenSequence){
         return res.send({message: "all fields are required!"})
     }
 
@@ -23,12 +23,19 @@ async function generateCoupon(req,res) {
     const coupons = []
 
     for(let i = 0; i < quantity; i++){
+        let exist = true
+        let couponSecret;
+        while(exist){
+            couponSecret = generateSecretCode()
+            exist = await coupon.exists({secret: couponSecret})
+        }
         coupons.push({
-        secret: generateSecretCode(),
+        token: `${tokenSequence}-${String(i + 1).padStart(4,"0")}`,
+        secret: couponSecret,
         discountValue: discountValue,
         discountType: discountType,
         services: services,
-        area: area,
+        sponsoredName: sponsoredName,
         validFrom: validFrom,
         validTo: validTo,
         isUsed: false,
@@ -38,8 +45,8 @@ async function generateCoupon(req,res) {
     }
     const result = await coupon.insertMany(coupons)
 
-    console.log({message: "successfully created", resut: result});
-    return res.status(200).json({message: "successfully created", coupon: result})
+    console.log({message: "Successfully created", resut: result});
+    return res.status(200).json({message: "Successfully created", coupon: result})
 }
 
 // Validating coupons-------------------------------------------------------------------------------------------
@@ -51,24 +58,24 @@ async function validateCoupon(req,res) {
 
 
     if(!filteredCoupon){
-        console.log({message: "invalid card"});
-        return res.json({message: "invalid card"})
+        console.log({message: "Invalid Coupon"});
+        return res.json({message: "Invalid Coupon"})
     }
     if(filteredCoupon.isCancelled){
-        console.log({message: "Your card is cancelled"});
-        return res.json({message: "Your card is cancelled"})
+        console.log({message: "Your Coupon is cancelled"});
+        return res.json({message: "Your Coupon is cancelled"})
         
     }
     if(filteredCoupon.isUsed){
-        console.log({message: "Card is already used"});
-        return res.json({message: "Card is already used"})
+        console.log({message: "Coupon is already used"});
+        return res.json({message: "Coupon is already used"})
     }
     const today = new Date()
     const fromData = new Date(filteredCoupon.validFrom)
     const toData = new Date(filteredCoupon.validTo)
     if(today > toData){
-        console.log({message: "Card is expired"});
-        return res.json({message: "Card is expired"})
+        console.log({message: "Coupon is expired"});
+        return res.json({message: "Coupon is expired"})
     }
     filteredCoupon.isUsed = true
     filteredCoupon.usedAt = new Date()
@@ -88,33 +95,33 @@ async function validateCoupon(req,res) {
 
 async function cancelCoupon(req,res) {
     const allCoupon = await coupon.find({})
-    const { token, area } = req.body
+    const { secret, sponsoredName } = req.body
 
-    if(token){
-        const coupon = allCoupon.find(c => token === c.token)
+    if(secret){
+        const coupon = allCoupon.find(c => secret === c.secret)
         if(!coupon){
-            return res.json({message: "coupon not found"})
+            return res.json({message: "Coupon not found"})
         }
         coupon.isCancelled = true
         await coupon.save()
 
-        console.log({message: `coupon ${token} is successfully cancelled`});
-        return res.json({message: `coupon ${token} is successfully cancelled`})
+        console.log({message: `Coupon ${secret} is successfully cancelled`});
+        return res.json({message: `Coupon ${secret} is successfully cancelled`})
     }
 
-    if(area){
-        const areaCoupon = await coupon.find({area})
-        if(areaCoupon.length === 0){
-            console.log({message: `No coupons found for area ${area}`});
-            return res.json({message: `No coupons found for area ${area}`})
+    if(sponsoredName){
+        const sponsoredNameCoupon = await coupon.find({sponsoredName})
+        if(sponsoredNameCoupon.length === 0){
+            console.log({message: `No coupons found of sponsored name ${sponsoredName}`});
+            return res.json({message: `No coupons found of sponsored name ${sponsoredName}`})
         }
-        await areaCoupon.map(coupon => {
+        await sponsoredNameCoupon.map(coupon => {
       coupon.isCancelled = true
       return coupon.save()
     })
   
-        console.log({message: `All coupons of ${area} has been cancelled`});
-        return res.json({message: `All coupons of ${area} has been cancelled`})
+        console.log({message: `All coupons of ${sponsoredName} has been cancelled`});
+        return res.json({message: `All coupons of ${sponsoredName} has been cancelled`})
     }
 }
 
@@ -165,14 +172,14 @@ async function allCoupons(req,res) {
     res.json({message: "Here are all cards ", count: allCoupon.length, coupon: allCoupon})
 }
 
-// Search By Area------------------------------------------------------------------------------------------------------------------------------------------------------
+// Search By Sponsored Name------------------------------------------------------------------------------------------------------------------------------------------------------
 
-async function searchByArea(req,res) {
-    const {searchByArea,status} = req.body
-    if(!searchByArea) return res.status(400).json({message: "Enter Area"})
+async function searchBySponsoredName(req,res) {
+    const {searchBySponsoredName,status} = req.body
+    if(!searchBySponsoredName) return res.status(400).json({message: "Enter Sponsored Name"})
     const today = new Date()
     let filter = {
-        area: searchByArea
+        sponsoredName: searchBySponsoredName
     }
     if(status === "active"){
         filter.isCancelled = false
@@ -188,10 +195,10 @@ async function searchByArea(req,res) {
         filter.isUsed = false
     }
 
-    const allCouponsByArea = await coupon.find(filter)
+    const allCouponsBySponsoredName = await coupon.find(filter)
 
-    if(allCouponsByArea.length === 0) return res.status(400).json({message: "No area found"})
-    res.json({message: "Found area", couponsByArea: allCouponsByArea})
+    if(allCouponsBySponsoredName.length === 0) return res.status(400).json({message: "No sponsored name found"})
+    res.json({message: "Found Sponsored Name", couponsBySponsoredName: allCouponsBySponsoredName})
 }
 
 module.exports = {
@@ -200,5 +207,5 @@ module.exports = {
     cancelCoupon,
     couponStatus,
     allCoupons,
-    searchByArea
+    searchBySponsoredName
 }

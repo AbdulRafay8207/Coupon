@@ -1,0 +1,90 @@
+/* ============================= */
+/* CREATE LAB PAGE ONLY */
+/* ============================= */
+
+.create-lab {
+  max-width: 700px;
+  margin: 100px auto;
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--blue-200);
+}
+
+/* ---- TITLE ---- */
+.create-lab h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+}
+
+/* ---- FORM GRID ---- */
+.create-lab .lab-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+/* ---- FORM GROUP ---- */
+.create-lab .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* ---- LABEL ---- */
+.create-lab label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ---- INPUTS ---- */
+.create-lab input {
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--blue-300);
+  font-size: 0.9rem;
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+/* ---- FOCUS ---- */
+.create-lab input:focus {
+  outline: none;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 2px var(--blue-200);
+}
+
+/* ---- SUBMIT BUTTON ---- */
+.create-lab .submit-btn {
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: var(--blue-500);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-lab .submit-btn:hover {
+  background: var(--blue-600);
+}
+
+/* ---- MESSAGE ---- */
+.create-lab .message {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--success);
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  .create-lab .lab-form {
+    grid-template-columns: 1fr;
+  }
+}

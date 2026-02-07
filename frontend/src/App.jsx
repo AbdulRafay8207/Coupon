@@ -16,6 +16,7 @@ import RoleWiseProtectedRoute from "./components/RoleWiseProtectedRoute"
 import CreateLab from "./pages/CreateLab"
 import PublicRoute from "./components/PublicRoute"
 import DashboardLayout from "./layouts/DashboardLayout"
+import StaffList from "./pages/StaffList"
 // import "./style/global.css"
 
 const App = () => {
@@ -40,6 +41,7 @@ const App = () => {
               <Route path="/dashboard" element={<AdminDashboard />} />
               <Route path="/create" element={<CreateCoupons />} />
               <Route path="/create-lab" element={<CreateLab />} />
+              <Route path="/staff-list" element={<StaffList/>}/>
             </Route>
 
             {/* ADMIN + LAB */}

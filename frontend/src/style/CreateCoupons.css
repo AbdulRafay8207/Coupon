@@ -1,0 +1,132 @@
+/* ============================= */
+/* CREATE COUPON PAGE ONLY */
+/* ============================= */
+:root {
+  
+  --white: #ffffff;
+  --cool-white: #f8fafc;
+  --bg-main: #f4f8fc;
+
+  --blue-100: #e6f2ff;
+  --blue-200: #cfe5ff;
+  --blue-300: #99c9ff;
+  --blue-400: #66adff;
+  --blue-500: #3b82f6; 
+  --blue-600: #2563eb;
+
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+
+}
+
+.create-coupon {
+  max-width: 1300px;
+  height: auto;
+  margin: 100px auto;
+  background: var(--white);
+  padding: 5rem 3rem 0 3rem;
+  border-radius: 12px;
+  border: 1px solid var(--blue-200);
+}
+
+/* ---- TITLE ---- */
+.create-coupon h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+}
+
+/* ---- FORM GRID ---- */
+.create-coupon .coupon-form {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* ---- FORM GROUP ---- */
+.create-coupon .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Service textarea should span full row */
+.create-coupon .form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ---- LABEL ---- */
+.create-coupon label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ---- INPUTS / SELECT / TEXTAREA ---- */
+.create-coupon input,
+.create-coupon select,
+.create-coupon textarea {
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--blue-300);
+  font-size: 0.9rem;
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+/* ---- FOCUS ---- */
+.create-coupon input:focus,
+.create-coupon select:focus,
+.create-coupon textarea:focus {
+  outline: none;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 2px var(--blue-200);
+}
+
+/* ---- SUBMIT BUTTON ---- */
+.create-coupon .submit-btn {
+  grid-column: 1 / -1; /* full width */
+  margin: 1rem 0 2rem 0;
+  padding: 0.8rem;
+  background: var(--blue-500);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-coupon .submit-btn:hover {
+  background: var(--blue-600);
+}
+/* ---- MESSAGE ---- */
+.create-coupon p {
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--danger);
+}
+.success{
+  color: var(--success);
+}
+/* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .create-coupon .coupon-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .create-coupon .coupon-form {
+    grid-template-columns: 1fr;
+  }
+}

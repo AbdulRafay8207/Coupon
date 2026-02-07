@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const {generateCoupon, validateCoupon, cancelCoupon, couponStatus, allCoupons, searchByArea} = require("../controllers/couponController")
+const {generateCoupon, validateCoupon, cancelCoupon, couponStatus, allCoupons, searchBySponsoredName} = require("../controllers/couponController")
 const { restrictTo } = require("../middleware/authMiddleware")
 
 // Generating coupons----------------------------------------------------------------------------------------
@@ -25,6 +25,6 @@ router.get('/',restrictTo("admin"),allCoupons)
 
 // Search By Area----------------------------------------------------------------------------------------------------
 
-router.post("/searchByArea",restrictTo("admin"),searchByArea)
+router.post("/searchBySponsoredName",restrictTo("admin"),searchBySponsoredName)
 
 module.exports = router

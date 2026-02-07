@@ -3,17 +3,18 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import getAuthHeader from "../components/GetAuthHeader"
 import { API_BASE_URL } from "../config";
 // import { QrReader } from "react-qr-reader";
+import "../style/validate.css"
 
 
 const ValidateCard = () => {
-    const [qrInput, setQrInput] = useState("")
-    const [token, setToken] = useState("")
-    const [secret, setSecret] = useState("")
-    const [result, setResult] = useState("")
-    const [loading, setLoading] = useState(false)
-    const [discount, setDiscount] = useState(null)
+  const [qrInput, setQrInput] = useState("")
+  const [token, setToken] = useState("")
+  const [secret, setSecret] = useState("")
+  const [result, setResult] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [discount, setDiscount] = useState(null)
 
-    useEffect(() => {
+  useEffect(() => {
     const scanner = new Html5QrcodeScanner(
       "reader",
       {
@@ -52,54 +53,53 @@ const ValidateCard = () => {
     );
 
     return () => {
-      scanner.clear().catch(() => {});
+      scanner.clear().catch(() => { });
     };
   }, []);
 
-async function validateByQR(){
-    try{
-        setLoading(true)
-        const parsed = JSON.parse(qrInput)
-        const response = await fetch(`${API_BASE_URL}/coupons/validate`,{
-            method: "POST",
-            headers: getAuthHeader(),
-            body: JSON.stringify(parsed)
-        })
-        const data = await response.json()
-        setResult(data.message)
-        setDiscount(data.discount || null)
-        if(response.status == 401){
-        navigate("/login")
-        return
-      }
+  // async function validateByQR() {
+  //   try {
+  //     setLoading(true)
+  //     const parsed = JSON.parse(qrInput)
+  //     const response = await fetch(`${API_BASE_URL}/coupons/validate`, {
+  //       method: "POST",
+  //       headers: getAuthHeader(),
+  //       body: JSON.stringify(parsed)
+  //     })
+  //     const data = await response.json()
+  //     setResult(data.message)
+  //     setDiscount(data.discount || null)
+  //     if (response.status == 401) {
+  //       navigate("/login")
+  //       return
+  //     }
 
-    }catch(err){
-        setResult("Invalid QR data")
-    }finally{
-        setLoading(false)
-    }
-}
+  //   } catch (err) {
+  //     setResult("Invalid QR data")
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
-async function validateByToken(){
-    const response = await fetch(`${API_BASE_URL}/coupons/validate`,{
-        method: "POST",
-        headers: getAuthHeader(),
-        body: JSON.stringify({token, secret})
+  async function validateByToken() {
+    const response = await fetch(`${API_BASE_URL}/coupons/validate`, {
+      method: "POST",
+      headers: getAuthHeader(),
+      body: JSON.stringify({ token, secret })
     })
     const data = await response.json()
     setResult(data.message)
-    if(response.status == 401){
-        navigate("/login")
-        return
-      }
-}
+    if (response.status == 401) {
+      navigate("/login")
+      return
+    }
+  }
 
-    return (
-        <div>
-        <h1>ValidateCoupon</h1>
-        <h3>Scan QR</h3>
+  return (
+    <div className="validate-page">
+      <h1>ValidateCoupon</h1>
 
-        {/* <textarea
+      {/* <textarea
         rows="5"
         placeholder="Past scanned QR data"
         value={qrInput}
@@ -107,25 +107,38 @@ async function validateByToken(){
         />
         <br/>
         <button onClick={validateByQR}>Validate QR</button>
-        <br />*/} 
-        <div> 
-      <div id="reader" style={{ width: "300px" }} />
+        <br />*/}
+      <div className="validate-grid">
+        <div className="validate-card">
+          <h3>Scan QR</h3>
+          <div id="reader" className="qr-reader" />
+          {discount && <p><strong>Discount:</strong> {discount}</p>}
+        </div>
 
-      {/* <h3>Result</h3>
-      <p>{result}</p> */}
-      {discount && <p><strong>Discount:</strong> {discount}</p>}
-    </div>
+        <div className="validate-card">
+          <h3>Manual Token</h3>
 
-        <h3>Manual Token</h3>
-        <input type="text" placeholder="Enter Token" value={token} onChange={(e)=> setToken(e.target.value)} />
-        <br />
-        <input type="text" placeholder="Enter Secret" value={secret} onChange={(e)=> setSecret(e.target.value)} />
-        <br />
-        <button onClick={validateByToken}>{loading? "Validating...": "Validate QR"}</button>
+          <div className="form-group">
+            <label>Token</label>
+            <input type="text" placeholder="Enter Token" value={token} onChange={(e) => setToken(e.target.value)} />
+          </div>
 
+          {/* <br /> */}
+          <div className="form-group">
+            <label>Secret</label>
+            <input type="text" placeholder="Enter Secret" value={secret} onChange={(e) => setSecret(e.target.value)} />
+          </div>
+          {/* <br /> */}
+
+          <button className="submit-btn" onClick={validateByToken}>{loading ? "Validating..." : "Validate QR"}</button>
+        </div>
+      </div>
+
+      <div className="result-box">
         <h3>RESULT</h3>
         <p>{result}</p>
-        {discount && <p><strong>Discount:</strong> {discount}</p>}
+        {discount && <p className="discount"><strong>Discount:</strong> {discount}</p>}
+      </div>
     </div>
   )
 }
