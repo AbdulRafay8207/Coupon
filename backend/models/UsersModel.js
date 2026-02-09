@@ -30,6 +30,10 @@ const userSchema = mongoose.Schema({
         type: String,
         enum: ["admin", "lab"],
         default: "lab"
+    },
+    status: {
+        type: String,
+        default: "Active"
     }
 },{timestamps: true})
 

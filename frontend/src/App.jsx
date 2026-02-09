@@ -7,7 +7,7 @@ import {
 
 import CreateCoupons from "./pages/CreateCoupons"
 import ValidateCard from "./pages/ValidateCard"
-import AdminDashboard from "./pages/AdminDashboard"
+import SponsoredDetails from "./pages/SponsoredDetails"
 import Navbar from "./components/Navbar"
 import Signup from "./pages/Signup"
 import Login from "./pages/Login"
@@ -17,6 +17,7 @@ import CreateLab from "./pages/CreateLab"
 import PublicRoute from "./components/PublicRoute"
 import DashboardLayout from "./layouts/DashboardLayout"
 import StaffList from "./pages/StaffList"
+import TestDashboard from "./pages/Dashboard"
 // import "./style/global.css"
 
 const App = () => {
@@ -38,7 +39,8 @@ const App = () => {
 
             {/* ADMIN ONLY */}
             <Route element={<RoleWiseProtectedRoute allowedRole={["admin"]} />}>
-              <Route path="/dashboard" element={<AdminDashboard />} />
+              <Route path="/sponsored-details/:sponsoredName" element={<SponsoredDetails />} />
+              <Route path="/dashboard" element={<TestDashboard />} />
               <Route path="/create" element={<CreateCoupons />} />
               <Route path="/create-lab" element={<CreateLab />} />
               <Route path="/staff-list" element={<StaffList/>}/>

@@ -13,6 +13,7 @@ const CreateLab = () => {
         confirmPassword: ""
     })
     const [message, setMessage] = useState("")
+    const [messageType, setMessageType] = useState("")
 
     const handleChange = (e)=>{
         setForm({...form,[e.target.name]: e.target.value})
@@ -27,6 +28,7 @@ const CreateLab = () => {
             body: JSON.stringify(form)
         })
         const data = await response.json()
+        setMessageType(data.type)
         setMessage(data.message)
     }
 
@@ -56,17 +58,17 @@ const CreateLab = () => {
             </div>
             
             <div className="form-group">
-                <label>password</label>
+                <label>Password</label>
                 <input name="password" placeholder="Enter Password" onChange={handleChange}/>
             </div>
 
             <div className="form-group">
                 <label>Confirm Password</label>
-                <input name="password" placeholder="Enter Password" onChange={handleChange}/>
+                <input name="confirmPassword" placeholder="Enter Password" onChange={handleChange}/>
             </div>
 
             <button className="submit-btn">Create</button>
-        {message && <p className="message">{message}</p>}
+        {message && <p className={messageType === "success"? "success" : "error"}>{message}</p>}
         </form>
     </div>
   )

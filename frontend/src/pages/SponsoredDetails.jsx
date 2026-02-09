@@ -1,23 +1,24 @@
 import { useEffect, useState } from "react"
 import { QRCodeCanvas } from "qrcode.react"
-import { useNavigate } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import getAuthHeader from "../components/GetAuthHeader"
 import { API_BASE_URL } from "../config"
 import "../style/Dashboard.css"
 
-const Dashboard = () => {
+const SponsoredDetails = () => {
   const navigate = useNavigate()
 
-  // const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState("")
+  const {sponsoredName} = useParams()
   const [coupons, setCoupons] = useState([])
+  const [heading, setHeading] = useState("")
   const [status, setStatus] = useState("all")
   const [loading, setLoading] = useState(false)
-  const [cancelSponsoredCoupons, setCancelSponsoredCoupons] = useState("")
-  const [searchSponsoredName, setSearchSponsoredName] = useState("")
+  const [findCoupon, setFindCoupon] = useState([])
 
   useEffect(() => {
     fetchCoupons(status)
-  }, [status])
+  }, [status, sponsoredName])
 
 
   function getStatus(coupon) {
@@ -31,19 +32,19 @@ const Dashboard = () => {
     setLoading(true)
     try {
       const res = await fetch(
-        `${API_BASE_URL}/coupons/status?type=${type}`,
+        `${API_BASE_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=${type}`,
         {
           headers: getAuthHeader()
         },
       )
       const data = await res.json()
-      // setMessage(data.message)
-      setCoupons(data.coupon || [])
+      setMessage(data.message)
+      setCoupons(data.sponsoredDetails || [])
 
-      if (res.status == 401) {
-        navigate("/login")
-        return
-      }
+      // if (res.status == 401) {
+      //   navigate("/login")
+      //   return
+      // }
     } catch (err) {
       console.error(err)
     } finally {
@@ -68,41 +69,21 @@ const Dashboard = () => {
     fetchCoupons(status)
   }
 
-  async function cancelSponsoredCouponsFunction() {
-    if (!cancelSponsoredCoupons) return alert("Enter sponsored name")
 
-    if (!window.confirm(`Cancel all coupons of ${cancelSponsoredCoupons}?`)) return
-
-    const res = await fetch(`${API_BASE_URL}/coupons/cancel`, {
-      method: "POST",
-      headers: getAuthHeader(),
-      body: JSON.stringify({ sponsoredName: cancelSponsoredCoupons })
-    })
-    const data = await res.json()
-    // setMessage(data.message)
-    if (res.status == 401) {
-      navigate("/login")
-      return
-    }
-    alert(data.message)
-    setCancelArea("")
-    fetchCoupons(status)
-  }
-
-  async function searchSponsoredNameFunction() {
+  async function findCouponFunction() {
     try {
-      const res = await fetch(`${API_BASE_URL}/coupons/searchBySponsoredName`, {
+      const res = await fetch(`${API_BASE_URL}/coupons/findCouponBySecret`, {
         method: "POST",
         headers: getAuthHeader(),
-        body: JSON.stringify({ searchBySponsoredName: searchSponsoredName, status: status })
+        body: JSON.stringify({ secret: findCoupon, status: status })
       })
       const data = await res.json()
       if (!res.ok) {
         alert(data.message)
         return
       }
-      if (!data.couponsBySponsoredName) return alert(data.message)
-      setCoupons(data.couponsBySponsoredName)
+      if (!data.couponBySecret) return alert(data.message)
+      setCoupons(data.couponBySecret)
     } catch (err) {
       console.log("Catch Error", err);
 
@@ -112,29 +93,18 @@ const Dashboard = () => {
   return (
     <>
       <div className="container">
-        <h1>Dashboard</h1>
+        {/* {coupons.map(c => <h1>{c.sponsoredName}</h1>)} */}
         <p>Manage coupons and their status</p>
       </div>
 
       <div className="filters">
         <div className="filter-group">
           <input
-            value={cancelSponsoredCoupons}
-            onChange={(e) => setCancelSponsoredCoupons(e.target.value)}
-            placeholder="Enter sponsored name to cancel"
+            placeholder="Search Coupon by Secret"
+            value={findCoupon}
+            onChange={(e) => setFindCoupon(e.target.value)}
           />
-          <button onClick={cancelSponsoredCouponsFunction} className="danger">
-            Cancel
-          </button>
-        </div>
-
-        <div className="filter-group">
-          <input
-            placeholder="Search sponsored name"
-            value={searchSponsoredName}
-            onChange={(e) => setSearchSponsoredName(e.target.value)}
-          />
-          <button onClick={searchSponsoredNameFunction}>
+          <button onClick={findCouponFunction}>
             Search
           </button>
         </div>
@@ -192,8 +162,8 @@ const Dashboard = () => {
                     )}
                     </td>
                     <td>{coupon.sponsoredName}</td>
-                    <td>{coupon.validFrom}</td>
-                    <td>{coupon.validTo}</td>
+                    <td>{new Date(coupon.validFrom).toLocaleDateString()}</td>
+                    <td>{new Date(coupon.validTo).toLocaleDateString()}</td>
                     <td>{getStatus(coupon)}</td>
                     <td>
                       <QRCodeCanvas
@@ -222,4 +192,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default SponsoredDetails

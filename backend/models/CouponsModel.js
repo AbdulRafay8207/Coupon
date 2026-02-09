@@ -34,10 +34,6 @@ const couponSchema = mongoose.Schema({
         type: Date,
         required: true
     },
-    // tokenSequence: {
-    //     type: String,
-    //     required: true
-    // },
     isUsed: {
         type: Boolean,
         required: true

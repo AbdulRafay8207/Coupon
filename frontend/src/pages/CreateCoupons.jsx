@@ -17,8 +17,8 @@ const CreateCoupons = () => {
         sponsoredName: "",
         tokenSequence: ""
     })
-
     const [message, setMessage] = useState("")
+    const [messageType, setMessageType] = useState("")
 
     const handleChange = (e)=>{
         const {name, value} = e.target
@@ -44,6 +44,7 @@ const CreateCoupons = () => {
             })
 
             const data = await response.json()
+            setMessageType(data.type)
             setMessage(data.message)
             console.log(data);
             if(response.status == 401){
@@ -108,7 +109,7 @@ const CreateCoupons = () => {
                 )}
             <button className="submit-btn">Create Coupon</button>
         </form>
-        {message && <p className={message === "Successfully created"? "success" : ""}>{message}</p>}
+        {message && <p className={messageType === "success"? "success" : "error"}>{message}</p>}
     </div>
   )
 }

@@ -1,7 +1,31 @@
 /* ============================= */
 /* CREATE LAB PAGE ONLY */
 /* ============================= */
+:root {
+  
+  --white: #ffffff;
+  --cool-white: #f8fafc;
+  --bg-main: #f4f8fc;
 
+  --blue-100: #e6f2ff;
+  --blue-200: #cfe5ff;
+  --blue-300: #99c9ff;
+  --blue-400: #66adff;
+  --blue-500: #3b82f6; 
+  --blue-600: #2563eb;
+
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+
+}
 .create-lab {
   max-width: 700px;
   margin: 100px auto;
@@ -74,12 +98,19 @@
 }
 
 /* ---- MESSAGE ---- */
-.create-lab .message {
+.create-lab .success {
   grid-column: 1 / -1;
   margin-top: 0.5rem;
   text-align: center;
   font-weight: 600;
   color: var(--success);
+}
+.error{
+  color: var(--danger);
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-weight: 600;
 }
 
 /* ---- RESPONSIVE ---- */
