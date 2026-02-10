@@ -4,22 +4,23 @@ import { useNavigate, useParams } from "react-router"
 import getAuthHeader from "../components/GetAuthHeader"
 import { API_BASE_URL } from "../config"
 import "../style/Dashboard.css"
+import FixGrammer from "../components/FixGrammer"
 
 const SponsoredDetails = () => {
   const navigate = useNavigate()
 
+  const { sponsoredName } = useParams()
+
   const [message, setMessage] = useState("")
-  const {sponsoredName} = useParams()
   const [coupons, setCoupons] = useState([])
-  const [heading, setHeading] = useState("")
   const [status, setStatus] = useState("all")
   const [loading, setLoading] = useState(false)
   const [findCoupon, setFindCoupon] = useState([])
 
+
   useEffect(() => {
     fetchCoupons(status)
   }, [status, sponsoredName])
-
 
   function getStatus(coupon) {
     if (coupon.isCancelled) return "cancelled"
@@ -90,10 +91,30 @@ const SponsoredDetails = () => {
     }
   }
 
+  async function deleteAllCoupons(sponsoredName) {
+
+    if (!window.confirm(`Delete all coupons of ${sponsoredName}?`)) return
+    try {
+      const response = await fetch(`${API_BASE_URL}/coupons/delete`, {
+        method: "POST",
+        headers: getAuthHeader(),
+        body: JSON.stringify({ sponsoredName })
+      })
+      const data = await response.json()
+      setMessage(data.message)
+      alert(data.message)
+      navigate("/dashboard")
+    } catch (error) {
+      console.log("error in deleting", error);
+
+    }
+
+  }
+
   return (
     <>
       <div className="container">
-        {/* {coupons.map(c => <h1>{c.sponsoredName}</h1>)} */}
+        <h1>{FixGrammer(sponsoredName)} Coupons</h1>
         <p>Manage coupons and their status</p>
       </div>
 
@@ -104,7 +125,7 @@ const SponsoredDetails = () => {
             value={findCoupon}
             onChange={(e) => setFindCoupon(e.target.value)}
           />
-          <button onClick={findCouponFunction}>
+          <button className="find-btn" onClick={findCouponFunction}>
             Search
           </button>
         </div>
@@ -118,6 +139,25 @@ const SponsoredDetails = () => {
             <option value="used">Used</option>
           </select>
         </div>
+
+        <div className="btns-container">
+          <button className="delete-btn" onClick={() => deleteAllCoupons(sponsoredName)}>Delete</button>
+          {/* <button onClick={() => navigate(`/sponsored-details/${encodeURIComponent(sponsoredName)}/print`)}>Print</button> */}
+          <button
+          className="print-layout-btn"
+            onClick={() =>
+              navigate(`/sponsored-details/${sponsoredName}/print`, {
+                state: {
+                  coupons,
+                  sponsoredName
+                }
+              })
+            }
+          >
+            Print Layout
+          </button>
+        </div>
+
       </div>
 
 

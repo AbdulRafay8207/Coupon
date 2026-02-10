@@ -18,6 +18,7 @@ import PublicRoute from "./components/PublicRoute"
 import DashboardLayout from "./layouts/DashboardLayout"
 import StaffList from "./pages/StaffList"
 import TestDashboard from "./pages/Dashboard"
+import PrintLayout from "./pages/PrintLayout"
 // import "./style/global.css"
 
 const App = () => {
@@ -40,6 +41,7 @@ const App = () => {
             {/* ADMIN ONLY */}
             <Route element={<RoleWiseProtectedRoute allowedRole={["admin"]} />}>
               <Route path="/sponsored-details/:sponsoredName" element={<SponsoredDetails />} />
+              <Route path="/sponsored-details/:sponsoredName/print" element={<PrintLayout />}/>
               <Route path="/dashboard" element={<TestDashboard />} />
               <Route path="/create" element={<CreateCoupons />} />
               <Route path="/create-lab" element={<CreateLab />} />

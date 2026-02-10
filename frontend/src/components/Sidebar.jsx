@@ -3,6 +3,7 @@ import { NavLink } from "react-router"
 import logo from "../assets/logo2.png"
 import "../style/Dashboard.css"
 
+
 const Sidebar = () => {
     const role = localStorage.getItem("role")
     const username = localStorage.getItem("username")
@@ -32,13 +33,6 @@ const Sidebar = () => {
             {/* Admin */}
             {role === "admin" &&(
                 <>
-                <li>
-                    <NavLink className={"navlink"} to={"/sponsored-details"}>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Z"/></svg>
-                        <span>Working</span>
-                    </NavLink>
-                </li>
-
                 <li>
                     <NavLink className={"navlink"} to={"/dashboard"}>
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Z"/></svg>

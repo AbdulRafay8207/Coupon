@@ -23,7 +23,7 @@ const couponSchema = mongoose.Schema({
         default: []
     },
     sponsoredName: {
-        type: String,
+        type: String,       
         required: true
     },
     validFrom: {

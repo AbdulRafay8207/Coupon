@@ -109,12 +109,17 @@ async function cancelCoupon(req, res) {
         return res.json({ message: `Coupon ${secret} is successfully cancelled` })
     }
     if(sponsoredName){
-        const coupons = await coupon.find(sponsoredName, {})
+        const coupons = await coupon.updateMany({
+            sponsoredName: sponsoredName, isUsed: false, isCancelled: false, validTo: {$gte: new Date()} 
+        },
+        {$set: {isCancelled: true}}
+        )
+        return res.status(200).json({message:`All Coupons of ${sponsoredName} successfully cancelled`})
     }
 
 }
 
-// Coupons Status------------------------------------------------------------------------------------------------------------------------------------
+// Coupons Status------------------------------------------------------------Need to maintain---------------------------------------------------------------------
 
 async function couponStatus(req, res) {
     const { type } = req.query
@@ -268,13 +273,22 @@ async function findCouponBySecret(req, res) {
     } else if (status === "cancelled") {
         filter.isCancelled = true
     } else if (status === "used") {
-        filter.isUsed = false
+        filter.isUsed = true
     }
 
     const findCouponBySecret = await coupon.find(filter)
 
     if (findCouponBySecret.length === 0) return res.status(400).json({ message: "No Coupon found" })
     res.json({ message: "Found Sponsored Name", couponBySecret: findCouponBySecret })
+}
+
+// Delete Sponsored------------------------------------------------------------------------------------------------------------------------
+
+async function deleteSponsored(req,res) {
+    const {sponsoredName} = req.body
+    await coupon.deleteMany({sponsoredName})
+    return res.status(200).json({message: "Sponsored Deleted"})
+
 }
 
 module.exports = {
@@ -285,5 +299,6 @@ module.exports = {
     allCoupons,
     findCouponBySecret,
     testCouponStatus,
-    sponsoredDetails
+    sponsoredDetails,
+    deleteSponsored
 }

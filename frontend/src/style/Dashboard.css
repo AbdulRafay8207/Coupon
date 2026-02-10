@@ -45,7 +45,7 @@
     text-align: center;
     font-weight: 600;
     background-color: var(--white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     border: none;
 
 }
@@ -186,27 +186,6 @@
 
 .dashboard-table td:nth-child(9)[data-status="used"] {
   color: var(--info);
-}
-
-/* ---- BUTTONS ---- */
-.dashboard-table button {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background-color: var(--danger);
-  color: white;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
-}
-
-.dashboard-table button:hover:not(:disabled) {
-  opacity: 0.85;
-}
-
-.dashboard-table button:disabled {
-  background-color: var(--text-muted);
-  cursor: not-allowed;
 }
 
 /* ---- SERVICES LIST ---- */
@@ -422,7 +401,7 @@
 }
 
 /* ---- BUTTONS ---- */
-.filters button {
+.filters .find-btn {
   padding: 0.55rem 0.9rem;
   border-radius: 0.5rem;
   border: none;
@@ -431,17 +410,55 @@
   font-size: 0.85rem;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
+  font-weight: 600;
 }
 
-.filters button:hover {
+.filters .find-btn:hover {
   background-color: var(--blue-600);
 }
 
-.filters button:active {
+.filters .find-btn:active {
   transform: scale(0.97);
 }
+.dashboard-table button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: var(--danger);
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  font-weight: 600;
 
-/* ---- DANGER BUTTON (Cancel Area) ---- */
+}
+
+.dashboard-table button:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.dashboard-table button:disabled {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
+}
+.dashboard-table .detail-btn {
+  background-color: var(--success);
+}
+.print-layout-btn{
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: var(--blue-500);
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-weight: 600;
+  margin: 0 5px 0 10px;
+
+}
+
+/* ---- DANGER BUTTON () ---- */
 .filters button.danger {
   background-color: var(--danger);
 }
@@ -449,7 +466,24 @@
 .filters button.danger:hover {
   opacity: 0.9;
 }
+.filters .delete-btn{
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: var(--danger);
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-weight: 600;
 
+}
+.filters .delete-btn:hover {
+  opacity: 0.9;
+}
+.btns-container{
+  margin-left: auto;
+}
 /* ---- RESPONSIVE ---- */
 @media (max-width: 768px) {
   .filters {

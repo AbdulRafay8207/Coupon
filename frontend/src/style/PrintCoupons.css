@@ -1,0 +1,184 @@
+:root {
+  --white: #ffffff;
+  --bg-main: #f4f8fc;
+
+  --blue-100: #e6f2ff;
+  --blue-400: #66adff;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+
+  --text-primary: #0f172a;
+}
+
+/* ================= PRINT RESET ================= */
+/* @media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--white);
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-wrapper {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    background: white;
+  }
+
+  .print-title {
+    margin-bottom: 16px;
+    font-size: 24px;
+  }
+
+
+
+  .print-page {
+    page-break-after: always;
+  }
+} */
+
+/* ================= SCREEN PREVIEW (A4 LOOK) ================= */
+.print-wrapper {
+  /* width: 100vh; */
+  min-width: 297mm;
+  margin: 20px auto;
+  padding: 20px;
+  background: var(--bg-main);
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* center title */
+.print-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--blue-600);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+/* ================= GRID ================= */
+.coupon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 20px;
+}
+
+/* ================= COUPON ================= */
+.coupon-card {
+  position: relative;
+  width: 400px;   /* fixed width */
+  height: 160px;  /* fixed height */
+  padding: 18px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    #3b83f6c6,
+    #38bff8b7,
+    #2564ebb7
+  );
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* make sure grid respects fixed size */
+.coupon-card {
+  flex: 0 0 auto;
+}
+
+/* Decorative overlay */
+.coupon-card::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.05) 2px,
+    transparent 2px,
+    transparent 20px
+  );
+  transform: rotate(-20deg);
+  z-index: 0;
+}
+
+/* ================= WATERMARK ================= */
+.logo-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.logo-container .img-logo {
+  width: 150px;
+  opacity: 0.1;
+  filter: grayscale(100%);
+}
+
+/* ================= INFO ================= */
+.coupon-info {
+  z-index: 2;
+  max-width: 65%;
+}
+
+.coupon-info h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.coupon-info p {
+  margin: 4px 0;
+  font-weight: 600;
+  color: rgba(1, 10, 74, 0.8);
+}
+
+/* ================= QR ================= */
+.coupon-qr {
+  z-index: 2;
+  background: var(--white);
+  padding: 10px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Secret below QR */
+.coupon-secret {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+/* ================= SPONSORED ================= */
+.coupon-sponsored {
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.65);
+  z-index: 2;
+}

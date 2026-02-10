@@ -35,12 +35,12 @@ const StaffList = () => {
         }
     }
 
-    async function inactivateStaff(id, status){
+    async function inactivateStaff(id){
         try {
             const response = await fetch(`${API_BASE_URL}/staff-status`,{
                 method: "POST",
                 headers: getAuthHeader(),
-                body: JSON.stringify({id,status})
+                body: JSON.stringify({id,status: "Inactive"})
             })
             const data = await response.json()
             setMessage(data.message)
@@ -50,12 +50,12 @@ const StaffList = () => {
         }
     }
 
-    async function activateStaff(id, status){
+    async function activateStaff(id){
         try {
             const response = await fetch(`${API_BASE_URL}/staff-status`,{
                 method: "POST",
                 headers: getAuthHeader(),
-                body: JSON.stringify({id, status})
+                body: JSON.stringify({id, status: "Active"})
             })
             const data = await response.json()
             setMessage(data.message)
@@ -129,7 +129,7 @@ const StaffList = () => {
                                 <td>{staff.contactNumber}</td>
                                 <td>{staff.password}</td>
                                 <td>{staff.status}</td>
-                                <td>{staff.status === "Active"? <button className={staff.status === "Active" ? "danger" : ""} onClick={() => inactivateStaff(staff._id, staff.status)}>Inactive</button> : <button  onClick={()=> activateStaff(staff._id, staff.status)}>Active</button>}</td>
+                                <td>{staff.status === "Active"? <button className={staff.status === "Active" ? "danger" : ""} onClick={() => inactivateStaff(staff._id)}>Inactive</button> : <button  onClick={()=> activateStaff(staff._id)}>Active</button>}</td>
                             </tr>
                         ))}
                     </tbody>

@@ -55,9 +55,9 @@ async function createLabTech(req,res){
     return res.status(200).json({message: "Lab technician successfully created", type:"success"})
 }
 
-//Get all staff----------------------------------------------------------------------------------------------------------------------------------
+//Get Staff By Status----------------------------------------------------------------------------------------------------------------------------------
 
-async function getAllStaff(req,res){
+async function getStaffByStatus(req,res){
     const {status} = req.query
     let filter = {}
     if(status === "All"){
@@ -77,24 +77,18 @@ async function getAllStaff(req,res){
 async function handleStaffStatus(req,res){
     const {id, status} = req.body
 
-    if(status === "Active"){
+    if (!id || !status) {
+        return res.status(400).json({ message: "Missing id or status" })
+    }
+
         await User.findByIdAndUpdate(
             id,
-            {status: "Inactive"},
+            {status},
             {new: true}
         )
-        console.log({message: "Staff inactive"});
-        return res.status(200).json({message: "Staff inactive"})
-    }
-    if(status === "Inactive"){
-        await User.findByIdAndUpdate(
-            id,
-            {status: "Active"},
-            {new: true}
-        )
-        console.log({message: "Staff active"})
-        return res.status(200).json({message: "Staff active"})
-    }
+        console.log({message: `Staff ${status}`})
+        return res.status(200).json({message: `Staff ${status}`})
+    
 
 }
 
@@ -120,7 +114,7 @@ module.exports = {
     handleUserSignIn,
     handleUserLogin,
     createLabTech,
-    getAllStaff,
+    getStaffByStatus,
     handleStaffStatus,
     findStaff
 }
