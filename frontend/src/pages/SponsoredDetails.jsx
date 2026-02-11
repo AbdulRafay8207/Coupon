@@ -91,25 +91,25 @@ const SponsoredDetails = () => {
     }
   }
 
-  async function deleteAllCoupons(sponsoredName) {
+  // async function deleteAllCoupons(sponsoredName) {
 
-    if (!window.confirm(`Delete all coupons of ${sponsoredName}?`)) return
-    try {
-      const response = await fetch(`${API_BASE_URL}/coupons/delete`, {
-        method: "POST",
-        headers: getAuthHeader(),
-        body: JSON.stringify({ sponsoredName })
-      })
-      const data = await response.json()
-      setMessage(data.message)
-      alert(data.message)
-      navigate("/dashboard")
-    } catch (error) {
-      console.log("error in deleting", error);
+  //   if (!window.confirm(`Delete all coupons of ${sponsoredName}?`)) return
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/coupons/delete`, {
+  //       method: "POST",
+  //       headers: getAuthHeader(),
+  //       body: JSON.stringify({ sponsoredName })
+  //     })
+  //     const data = await response.json()
+  //     setMessage(data.message)
+  //     alert(data.message)
+  //     navigate("/dashboard")
+  //   } catch (error) {
+  //     console.log("error in deleting", error);
 
-    }
+  //   }
 
-  }
+  // }
 
   return (
     <>
@@ -141,8 +141,8 @@ const SponsoredDetails = () => {
         </div>
 
         <div className="btns-container">
-          <button className="delete-btn" onClick={() => deleteAllCoupons(sponsoredName)}>Delete</button>
-          {/* <button onClick={() => navigate(`/sponsored-details/${encodeURIComponent(sponsoredName)}/print`)}>Print</button> */}
+          {/* <button className="delete-btn" onClick={() => deleteAllCoupons(sponsoredName)}>Delete</button> */}
+
           <button
           className="print-layout-btn"
             onClick={() =>

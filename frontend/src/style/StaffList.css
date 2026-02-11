@@ -175,6 +175,13 @@
   text-align: center;
   border-bottom: 1px solid var(--blue-200);
 }
+.no-data {
+  padding: 2rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--danger);
+  background-color: var(--cool-white);
+}
 
 /* Zebra rows */
 .table tbody tr:nth-child(even) {
@@ -208,6 +215,8 @@
   cursor: pointer;
   color: white;
   transition: opacity 0.2s ease;
+  /* font-size: medium; */
+  font-weight: 900;
 }
 
 /* Activate */
@@ -218,6 +227,9 @@
 /* Inactivate */
 .table button.danger {
   background-color: var(--danger);
+}
+.edit-btn{
+  margin-left: 5px;
 }
 
 .table button:hover {

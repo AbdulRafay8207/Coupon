@@ -19,24 +19,23 @@ const CreateCoupons = () => {
     })
     const [message, setMessage] = useState("")
     const [messageType, setMessageType] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (e)=>{
         const {name, value} = e.target
-        // console.log("name",name,"value",value);
-        
         setFormData({...formData,[name]:value})
     }
     
     const handleSubmit = async (e)=>{
         e.preventDefault()
+        setLoading(true)
 
         const payload = {
             ...formData,
             services: formData.discountType === "service"? formData.services.split(",").map(s => s.trim()) : []
         }
-        console.log(payload.services);
         
-        
+        try {
             const response = await fetch(`${API_BASE_URL}/coupons/create`, {
                 method: "POST",
                 headers: getAuthHeader(),
@@ -51,7 +50,14 @@ const CreateCoupons = () => {
                 navigate("/login")
                 return
             }
+            if(data.type === "success") navigate("/dashboard")
+        } catch (error) {
+            setMessage("Something Went Wrong")
+        } finally{
+            setLoading(false)
+        }
     }
+
   return (
     <div className="create-coupon">
         <h1>Create Coupon</h1>
@@ -70,11 +76,6 @@ const CreateCoupons = () => {
                     <label htmlFor="discountValue">Discount Value (%)</label>
                     <input type="text" name="discountValue" id="discountValue" onChange={handleChange} />
                 </div>
-                
-                {/* <div className="form-group">
-                    <label htmlFor="area">Area</label>
-                    <input type="text" name="area" id="area" onChange={handleChange} />
-                </div> */}
 
                 <div className="form-group">
                     <label htmlFor="quantity">Quantity</label>
@@ -107,7 +108,7 @@ const CreateCoupons = () => {
                         <textarea name="services" id="services" placeholder="ECG, Blood Test, X-ray" onChange={handleChange} />
                     </div>
                 )}
-            <button className="submit-btn">Create Coupon</button>
+            <button className="submit-btn" disabled={loading}> {loading? <span className="spinner"></span> : "Create"} </button>
         </form>
         {message && <p className={messageType === "success"? "success" : "error"}>{message}</p>}
     </div>

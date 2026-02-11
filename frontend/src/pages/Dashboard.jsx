@@ -66,7 +66,7 @@
       </div>
 
       <div className="filters">
-          <p className="total">Total Sponsored: {sponsoredSummary.length}</p>    
+          <p className="total">Total Partners: {sponsoredSummary.length}</p>    
       </div>
 
         <div className="table-container">

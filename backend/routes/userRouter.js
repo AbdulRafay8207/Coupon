@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const {handleUserSignIn, handleUserLogin, createLabTech, getStaffByStatus, handleStaffStatus, findStaff} = require("../controllers/userController")
+const {handleUserSignIn, handleUserLogin, createLabTech, getStaffByStatus, handleStaffStatus, findStaff, editStaff, getStaffById} = require("../controllers/userController")
 const { restrictLoggedInUserOnly, restrictTo } = require("../middleware/authMiddleware")
 
 router.post('/signup',handleUserSignIn)
@@ -9,5 +9,7 @@ router.post('/create-lab',restrictLoggedInUserOnly,restrictTo("admin"),createLab
 router.get('/staff-list',restrictLoggedInUserOnly,restrictTo("admin"),getStaffByStatus)
 router.post('/staff-status',restrictLoggedInUserOnly,restrictTo("admin"),handleStaffStatus)
 router.post('/find-staff',restrictLoggedInUserOnly,restrictTo("admin"), findStaff)
+router.put('/edit-staff/:id',restrictLoggedInUserOnly, restrictTo("admin"), editStaff)
+router.get("/staff/:id", restrictLoggedInUserOnly, restrictTo("admin"), getStaffById)
 
 module.exports = router

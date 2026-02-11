@@ -1,28 +1,43 @@
 const User = require("../models/UsersModel")
 const {setUser} = require("../service/auth")
+const bcrypt = require("bcrypt")
 
 
 // Handle Signin--------------------------------------------------------------------------------------------------------------
 
 async function handleUserSignIn(req,res){
-    const {username, email, password,confirmPassword} = req.body
-    await User.create({
-        username,
-        email,
-        password,
-        confirmPassword,
-    })
-    return res.json({message: "Successfully Signin"})
+    const {username, email, password,confirmPassword, contactNumber} = req.body
+    if(password !== confirmPassword) return res.status(400).json({message: "Confirm password did not match"})
+
+    const hashedPassoword = await bcrypt.hash(password,10)
+    try {
+        await User.create({
+            username,
+            email,
+            password: hashedPassoword,
+            branchName: "Head Office",
+            contactNumber,
+            role: "admin"
+        })
+        return res.json({message: "Successfully Signin"})
+    } catch (error) {
+        console.log("error in handleUserSignin function",error);
+        return res.json({message: "Something went wrong"})
+    }
 }
 
 // Handle Login------------------------------------------------------------------------------------------------------------------------------------------
 
 async function handleUserLogin(req,res){
     const { email, password} = req.body
-    const user = await User.findOne({email, password})
-    if(!user){
-        return res.json({message: "Invalid username or password",user: user})
+    const user = await User.findOne({email})
+    const isMatch = await bcrypt.compare(password, user.password)
+    if(!user || !isMatch){
+        return res.json({message: "Invalid username or password"})
     }
+
+    if(user.status === "Inactive") return res.json({message: "Your account is inactive. Contact Admin"})
+
     const token = setUser(user)
     
     return res.json({message: "Login successfuly",uid: token})
@@ -42,13 +57,14 @@ async function createLabTech(req,res){
         return res.status(400).json({message: "A user with that email already exist", type:"error"})
     }
     
+    const hashedPassoword = await bcrypt.hash(password,10)
+    
     await User.create({
         username,
         email,
         branchName,
         contactNumber,
-        password,
-        confirmPassword,
+        password: hashedPassoword,
         role: "lab"
     })
 
@@ -58,16 +74,22 @@ async function createLabTech(req,res){
 //Get Staff By Status----------------------------------------------------------------------------------------------------------------------------------
 
 async function getStaffByStatus(req,res){
-    const {status} = req.query
-    let filter = {}
-    if(status === "All"){
-        filter = {role: "lab"}
-    }else if(status === "Active"){
-        filter = {role: "lab", status: "Active"}
+    const {status, search} = req.query
+    let filter = {role: "lab"}
+    
+    if(status === "Active"){
+        filter.status = "Active"
     }else if(status === "Inactive"){
-        filter = {role: "lab", status: "Inactive"}
+        filter.status = "Inactive"
     }
-    const allStaff = await User.find(filter)
+    
+    if(search){
+        filter.username = {
+            $regex: "^" + search,
+            $options: "i"   
+        }
+    }
+    const allStaff = await User.find(filter).select("-password")
     return res.status(200).json({message: "Here are all staff list", countStaff:allStaff.length ,allStaff: allStaff})
     
 }
@@ -107,7 +129,47 @@ async function findStaff(req,res){
         
 }
 
-// User Status Filter------------------------------------------------------------------------------------------------------------------------------------------------
+// Edit Staff------------------------------------------------------------------------------------------------------------------------------------------------
+
+async function editStaff(req,res){
+    const {id} = req.params
+    const { username, email, branchName, contactNumber, password } = req.body
+
+    const updateData = {
+        username,
+        email,
+        branchName,
+        contactNumber
+    }
+
+    if(password && password.trim() !== ""){
+        const hashedPassoword = await bcrypt.hash(password,10)
+        updateData.password = hashedPassoword
+    }
+
+    await User.findByIdAndUpdate(
+        id,
+        updateData,
+        {new: true}
+    ).select("-password")
+
+    return res.status(200).json({message: "Staff updated successfuly",type: "success"})
+
+}   
+
+// Get Staff by ID--------------------------------------------------------------------------------------------------------------
+
+async function getStaffById(req, res) {
+  const { id } = req.params
+
+  const staff = await User.findById(id).select("-password")
+
+  if (!staff) {
+    return res.status(404).json({ message: "Staff not found" })
+  }
+
+  res.status(200).json({ staff })
+}
 
 
 module.exports = {
@@ -116,5 +178,7 @@ module.exports = {
     createLabTech,
     getStaffByStatus,
     handleStaffStatus,
-    findStaff
+    findStaff,
+    editStaff,
+    getStaffById
 }

@@ -27,7 +27,9 @@ const Sidebar = () => {
                 <div className="role">{role}</div>
             </li>
             <li>
-                <img className="logo" src={logo} alt="bait-us-salam logo" />
+                <NavLink className={"logonavlink"} to={"/dashboard"}>
+                    <img className="logo" src={logo} alt="bait-us-salam logo" />
+                </NavLink>
             </li>
 
             {/* Admin */}

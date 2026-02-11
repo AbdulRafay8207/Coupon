@@ -96,7 +96,20 @@
 .create-lab .submit-btn:hover {
   background: var(--blue-600);
 }
-
+.cancel-btn{
+  font-size: medium;
+  grid-column: 1 / -1;
+  padding: 0.8rem;
+  background: var(--warning);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cancel-btn:hover{
+  background: var(--warning);
+}
 /* ---- MESSAGE ---- */
 .create-lab .success {
   grid-column: 1 / -1;

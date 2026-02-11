@@ -8,11 +8,11 @@ import "../style/validate.css"
 
 const ValidateCard = () => {
   const [qrInput, setQrInput] = useState("")
-  const [token, setToken] = useState("")
   const [secret, setSecret] = useState("")
   const [result, setResult] = useState("")
   const [loading, setLoading] = useState(false)
   const [discount, setDiscount] = useState(null)
+  const [messageType, setMessageType] = useState("")
 
   useEffect(() => {
     const scanner = new Html5QrcodeScanner(
@@ -28,6 +28,8 @@ const ValidateCard = () => {
       async (decodedText) => {
         try {
           const parsed = JSON.parse(decodedText);
+          console.log("Data",parsed);
+
 
           const response = await fetch(
             `${API_BASE_URL}/coupons/validate`,
@@ -37,14 +39,19 @@ const ValidateCard = () => {
               body: JSON.stringify(parsed)
             }
           );
+          console.log("Data",parsed);
+          
 
           const data = await response.json();
           setResult(data.message);
           setDiscount(data.discountValue || null);
+          setMessageType(data.type)
 
           scanner.clear(); // stop scanning after success
         } catch (err) {
           setResult("Invalid QR code");
+          console.log("error in qr reader catch",err);
+          
         }
       },
       (error) => {
@@ -57,41 +64,27 @@ const ValidateCard = () => {
     };
   }, []);
 
-  // async function validateByQR() {
-  //   try {
-  //     setLoading(true)
-  //     const parsed = JSON.parse(qrInput)
-  //     const response = await fetch(`${API_BASE_URL}/coupons/validate`, {
-  //       method: "POST",
-  //       headers: getAuthHeader(),
-  //       body: JSON.stringify(parsed)
-  //     })
-  //     const data = await response.json()
-  //     setResult(data.message)
-  //     setDiscount(data.discount || null)
-  //     if (response.status == 401) {
-  //       navigate("/login")
-  //       return
-  //     }
-
-  //   } catch (err) {
-  //     setResult("Invalid QR data")
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
-  async function validateByToken() {
-    const response = await fetch(`${API_BASE_URL}/coupons/validate`, {
-      method: "POST",
-      headers: getAuthHeader(),
-      body: JSON.stringify({ token, secret })
-    })
-    const data = await response.json()
-    setResult(data.message)
-    if (response.status == 401) {
-      navigate("/login")
-      return
+  async function validateBySecret() {
+      setLoading(true )
+    try {
+      const response = await fetch(`${API_BASE_URL}/coupons/validate`, {
+        method: "POST",
+        headers: getAuthHeader(),
+        body: JSON.stringify({ secret })
+      })
+      const data = await response.json()
+      setResult(data.message)
+      setMessageType(data.type)
+      setDiscount(data.discountValue || null);
+  
+      if (response.status == 401) {
+        navigate("/login")
+        return
+      }
+    } catch (error) {
+      console.log("error in validateBySecret",error);
+    } finally{
+      setLoading(false)
     }
   }
 
@@ -99,29 +92,14 @@ const ValidateCard = () => {
     <div className="validate-page">
       <h1>ValidateCoupon</h1>
 
-      {/* <textarea
-        rows="5"
-        placeholder="Past scanned QR data"
-        value={qrInput}
-        onChange={(e)=> setQrInput(e.target.value)}
-        />
-        <br/>
-        <button onClick={validateByQR}>Validate QR</button>
-        <br />*/}
       <div className="validate-grid">
         <div className="validate-card">
           <h3>Scan QR</h3>
           <div id="reader" className="qr-reader" />
-          {discount && <p><strong>Discount:</strong> {discount}</p>}
         </div>
 
         <div className="validate-card">
           <h3>Manual Token</h3>
-
-          <div className="form-group">
-            <label>Token</label>
-            <input type="text" placeholder="Enter Token" value={token} onChange={(e) => setToken(e.target.value)} />
-          </div>
 
           {/* <br /> */}
           <div className="form-group">
@@ -130,14 +108,14 @@ const ValidateCard = () => {
           </div>
           {/* <br /> */}
 
-          <button className="submit-btn" onClick={validateByToken}>{loading ? "Validating..." : "Validate QR"}</button>
+          <button className="submit-btn" onClick={validateBySecret}>{loading ? <span className="spinner"></span> : "Validate QR"}</button>
         </div>
       </div>
 
       <div className="result-box">
         <h3>RESULT</h3>
-        <p>{result}</p>
-        {discount && <p className="discount"><strong>Discount:</strong> {discount}</p>}
+        <p className={messageType === "success"? "success" : "error"}>{result}</p>
+        {discount && <p className={messageType === "success"? "success" : "error"}><strong>Discount:</strong> {discount}</p>}
       </div>
     </div>
   )

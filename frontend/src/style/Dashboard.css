@@ -73,6 +73,10 @@
     color: blue;
     background: none;
 }
+.logo-btn{
+  border: none;
+  background: none;
+}
 #sidebar > ul >li:first-child{
     display: flex;
     justify-content: flex-end;
@@ -233,10 +237,15 @@
   color: var(--blue-600);
 }
 .logo {
-  width: 100%;
-  max-width: 120px;
-  margin: 0 auto 20px;
+  width: 120px;
+  height: auto;
+  /* margin: 0 auto 20px; */
   display: block;
+}
+.logonavlink {
+  display: inline-block;
+  width: fit-content;
+  margin: 0 auto 20px auto;
 }
 #sidebar.close .navlink span {
   display: none;

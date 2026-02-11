@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 const express = require("express")
 const cors = require("cors")
 const cookieParser = require("cookie-parser")
@@ -10,18 +12,19 @@ const {connectMongoDB} = require('./connection')
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const {restrictLoggedInUserOnly} = require("./middleware/authMiddleware")
-const dataFilePath = path.join(__dirname,"./db.json")
+const { connectToDataBase } = require("./db")
 
 const app = express()
 
 app.use(cors({
-  origin: true,  // allow all origins (dev only)
+  origin: true,
   credentials: true
 }));
 app.use(express.json())
 app.use(cookieParser())
 
-connectMongoDB("mongodb://127.0.0.1:27017/coupon").then(()=> console.log("MongoDB connected"))
+// connectMongoDB("mongodb://127.0.0.1:27017/coupon").then(()=> console.log("MongoDB connected"))
+connectToDataBase()
 
 app.use('/coupons',restrictLoggedInUserOnly, couponsRoute)
 app.use('/',userRoute)

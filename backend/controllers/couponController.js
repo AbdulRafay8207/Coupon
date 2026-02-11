@@ -52,30 +52,30 @@ async function generateCoupon(req, res) {
 // Validating coupons-------------------------------------------------------------------------------------------
 
 async function validateCoupon(req, res) {
-    const { id, token, secret } = req.body
+    const {  secret } = req.body
     const allCoupons = await coupon.find({})
-    const filteredCoupon = allCoupons.find(c => c._id.toString() === id || (c.token === token && c.secret === secret))
+    const filteredCoupon = allCoupons.find(c => c.secret === secret)
 
 
     if (!filteredCoupon) {
         console.log({ message: "Invalid Coupon" });
-        return res.json({ message: "Invalid Coupon" })
+        return res.json({ message: "Invalid Coupon", type:"error" })
     }
     if (filteredCoupon.isCancelled) {
         console.log({ message: "Your Coupon is cancelled" });
-        return res.json({ message: "Your Coupon is cancelled" })
+        return res.json({ message: "Your Coupon is cancelled", type:"error" })
 
     }
     if (filteredCoupon.isUsed) {
         console.log({ message: "Coupon is already used" });
-        return res.json({ message: "Coupon is already used" })
+        return res.json({ message: "Coupon is already used", type:"error" })
     }
     const today = new Date()
     const fromData = new Date(filteredCoupon.validFrom)
     const toData = new Date(filteredCoupon.validTo)
     if (today > toData) {
         console.log({ message: "Coupon is expired" });
-        return res.json({ message: "Coupon is expired" })
+        return res.json({ message: "Coupon is expired", type:"error" })
     }
     filteredCoupon.isUsed = true
     filteredCoupon.usedAt = new Date()
@@ -87,7 +87,8 @@ async function validateCoupon(req, res) {
 
     return res.json({
         message: "Coupon successfully applied",
-        discountValue: filteredCoupon.discountValue
+        discountValue: filteredCoupon.discountValue,
+        type: "success"
     })
 }
 

@@ -28,8 +28,6 @@ const handleSubmit = async (e)=>{
     setMessage(data.message)
   
     // if(data.user === null) return
-    console.log(message);
-    console.log(data);
     
     if(data.uid){
       const payLoad = JSON.parse(atob(data.uid.split(".")[1]))
