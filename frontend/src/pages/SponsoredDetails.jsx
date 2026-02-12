@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { QRCodeCanvas } from "qrcode.react"
 import { useNavigate, useParams } from "react-router"
 import getAuthHeader from "../components/GetAuthHeader"
-import { API_BASE_URL } from "../config"
 import "../style/Dashboard.css"
 import FixGrammer from "../components/FixGrammer"
 

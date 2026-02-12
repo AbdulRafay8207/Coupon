@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode";
 import getAuthHeader from "../components/GetAuthHeader"
-import { API_BASE_URL } from "../config";
-// import { QrReader } from "react-qr-reader";
 import "../style/validate.css"
 
 
 const ValidateCard = () => {
-  const [qrInput, setQrInput] = useState("")
   const [secret, setSecret] = useState("")
   const [result, setResult] = useState("")
   const [loading, setLoading] = useState(false)

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { API_BASE_URL } from "../config"
 import getAuthHeader from "../components/GetAuthHeader"
 import "../style/StaffList.css"
 import { useLocation, useNavigate } from "react-router"

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router"
 import { QRCodeCanvas } from "qrcode.react"
 import getAuthHeader from "../components/GetAuthHeader"
-import { API_BASE_URL } from "../config"
 import "../style/SponsoredPrint.css"
 
 const SponsoredPrint = () => {

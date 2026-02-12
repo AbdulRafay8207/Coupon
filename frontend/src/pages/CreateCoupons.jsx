@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import getAuthHeader from "../components/GetAuthHeader"
-import { API_BASE_URL } from "../config"
 import "../style/CreateCoupons.css"
 
 const CreateCoupons = () => {
