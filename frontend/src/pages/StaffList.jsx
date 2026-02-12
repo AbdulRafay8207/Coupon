@@ -10,7 +10,6 @@ const StaffList = () => {
     const [staffList, setStaffList] = useState([])
     const [findStaff, setFindStaff] = useState("")
     const [status, setStatus] = useState("All")
-    const [editMode, setEditMode] = useState(null)
 
     const location = useLocation()
     const navigate = useNavigate()
@@ -76,21 +75,6 @@ const StaffList = () => {
         return
     }
 
-    async function handleUpdate(){
-        try {
-            const response = await fetch(`${API_BASE_URL}/edit-staff/${editMode._id}`,{
-                method: "PUT",
-                headers: getAuthHeader(),
-                body: JSON.stringify({editMode})
-            }) 
-            const data = await response.json()
-            setMessage(data.message)
-            setEditMode(false)
-            fetchStaffList(status,findStaff)
-        } catch (error) {
-            console.log("error in handleUpdate function",error);
-        }
-    }
 
     return (
         <div className="main-container">
@@ -118,31 +102,6 @@ const StaffList = () => {
                 </div>
 
             </div>
-
-            {editMode && (
-                <div className="edit-box">
-                    <h3>Edit Staff</h3>
-
-                    <input type="text" value={editMode.username} onChange={(e)=> setEditMode({...editMode, username: e.target.value})}/>
-
-                    <input type="email" value={editMode.email} onChange={(e)=> setEditMode({...editMode, email: e.target.value})}/>
-
-                    <input type="text" value={editMode.branchName} onChange={(e)=> setEditMode({...editMode, branchName: e.target.value})}/>
-                    
-                    <input type="text" inputMode="numeric" maxLength={11} value={editMode.contactNumber} onChange={(e)=> {
-                        const onlyNumbers = e.target.value.replace(/\D/g, "")
-                        setEditMode({...editMode, contactNumber: onlyNumbers})
-                    }}/>
-
-                    <input type="password" value={editMode.password || ""} onChange={(e)=> setEditMode({...editMode, password: e.target.value})}/>
-
-                    <input type="password" value={editMode.confirmPassword || ""} onChange={(e)=> setEditMode({...editMode, confirmPassword: e.target.value})}/>
-                    
-                    <button onClick={() => setEditMode(false)}>Cancel</button>
-                    <button onClick={()=> handleUpdate}>Save</button>
-
-                </div>
-            )}
 
             <div className="table-container">
                 {loading ? (

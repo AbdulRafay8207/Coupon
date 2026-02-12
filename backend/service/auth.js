@@ -7,7 +7,7 @@ function setUser(user){
         username: user.username,
         email: user.email,
         role: user.role
-    },SECRET)
+    },SECRET, {expiresIn: "1h"})
 }
 function getUser(token){
     if(!token) return null

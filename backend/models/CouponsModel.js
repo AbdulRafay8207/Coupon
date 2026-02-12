@@ -43,8 +43,13 @@ const couponSchema = mongoose.Schema({
         required: true
     },
     usedAt: {
-        type: String,
+        type: Date,
     },
+    usedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        default: null
+    }
 })
 
 const coupon = mongoose.model("coupon", couponSchema)

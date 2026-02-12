@@ -53,8 +53,7 @@ async function generateCoupon(req, res) {
 
 async function validateCoupon(req, res) {
     const {  secret } = req.body
-    const allCoupons = await coupon.find({})
-    const filteredCoupon = allCoupons.find(c => c.secret === secret)
+    const filteredCoupon = await coupon.findOne({secret})
 
 
     if (!filteredCoupon) {
@@ -79,6 +78,7 @@ async function validateCoupon(req, res) {
     }
     filteredCoupon.isUsed = true
     filteredCoupon.usedAt = new Date()
+    filteredCoupon.usedBy = req.user._id
     filteredCoupon.save()
     console.log({
         message: "Coupon successfully applied",
@@ -254,6 +254,7 @@ async function sponsoredDetails(req,res) {
     return res.status(200).json({message: "Sponsored Details", sponsoredDetails: sponsoredCoupons})
 }
 
+
 // Search By Secret------------------------------------------------------------------------------------------------------------------------------------------------------
 
 async function findCouponBySecret(req, res) {
@@ -292,6 +293,48 @@ async function deleteSponsored(req,res) {
 
 }
 
+// Lab Staff Dashboard----------------------------------------------------------------------------------------
+
+async function labStaffDashboard(req,res){
+    const userId = req.user._id
+    console.log("THIS IS USER ID", userId);
+    
+    const {from ,to} = req.query
+
+    let filter = {
+        usedBy: userId,
+        isUsed: true
+    }
+    if(from && to){
+        const start = new Date(from)
+        start.setHours(0,0,0,0)
+
+        const end = new Date(to)
+        end.setHours(23,59,59,999)
+        filter.usedAt = {
+            $gte: start,
+            $lte: end
+        }
+    }
+
+    const coupons = await coupon.find(filter).select("token sponsoredName discountValue usedAt validFrom validTo")
+
+    const today = new Date()
+    const startOfToday = new Date(today.setHours(0,0,0,0))
+
+    const todayCount = await coupon.countDocuments({
+        usedBy: userId,
+        isUsed: true,
+        usedAt: { $gte: startOfToday }
+    })
+
+    return res.json({
+        totalScans: coupons.length,
+        todayScans: todayCount,
+        scans: coupons
+    })
+}
+
 module.exports = {
     generateCoupon,
     validateCoupon,
@@ -301,5 +344,6 @@ module.exports = {
     findCouponBySecret,
     testCouponStatus,
     sponsoredDetails,
-    deleteSponsored
+    deleteSponsored,
+    labStaffDashboard
 }

@@ -8,8 +8,8 @@ async function restrictLoggedInUserOnly(req,res,next){
     const user = getUser(token)
     if(!user) return res.status(401).json({message: "Unauthorized"})
 
-    const isActiveUser = User.findById(user._id)
-    if(isActiveUser === "Inactive") return res.status(403).json({message: "Your account is inactive"})
+    const isActiveUser = await User.findById(user._id)
+    if(isActiveUser.status === "Inactive") return res.status(403).json({message: "Your account is inactive"})
 
     req.user = user
     return next()

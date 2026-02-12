@@ -8,6 +8,10 @@ const bcrypt = require("bcrypt")
 async function handleUserSignIn(req,res){
     const {username, email, password,confirmPassword, contactNumber} = req.body
     if(password !== confirmPassword) return res.status(400).json({message: "Confirm password did not match"})
+    const isExist = await User.find({email})
+    console.log("Already exist",isExist);
+    if(isExist.length > 0) return res.status(400).json({message: "A user with this email already exist"})
+    
 
     const hashedPassoword = await bcrypt.hash(password,10)
     try {

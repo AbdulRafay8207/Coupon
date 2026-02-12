@@ -19,6 +19,7 @@ import StaffList from "./pages/StaffList"
 import TestDashboard from "./pages/Dashboard"
 import PrintLayout from "./pages/PrintLayout"
 import EditStaff from "./pages/EditStaff"
+import LabDashboard from "./pages/LabDashboard"
 
 const App = () => {
   const router = createBrowserRouter(
@@ -51,7 +52,10 @@ const App = () => {
             {/* ADMIN + LAB */}
             <Route element={<RoleWiseProtectedRoute allowedRole={["admin", "lab"]} />}>
               <Route path="/validate" element={<ValidateCard />} />
-            </Route>  
+            </Route> 
+            <Route element={<RoleWiseProtectedRoute allowedRole={["lab"]}/>}>
+              <Route path="/lab-dashboard" element={<LabDashboard/>}/>
+            </Route>
 
           </Route>
         </Route>

@@ -36,7 +36,7 @@ const AddLabStaff = () => {
             const data = await response.json()
             setMessageType(data.type)
             setMessage(data.message)
-            if(data.type === "success") navigate("/staff-list")
+            // if(data.type === "success") navigate("/staff-list")
         } catch (error) {
             console.log("Error in Add lab staff catch",error)
         } finally{

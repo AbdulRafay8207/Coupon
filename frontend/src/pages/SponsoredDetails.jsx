@@ -8,19 +8,21 @@ import FixGrammer from "../components/FixGrammer"
 
 const SponsoredDetails = () => {
   const navigate = useNavigate()
-
   const { sponsoredName } = useParams()
 
   const [message, setMessage] = useState("")
   const [coupons, setCoupons] = useState([])
   const [status, setStatus] = useState("all")
   const [loading, setLoading] = useState(false)
-  const [findCoupon, setFindCoupon] = useState([])
-
+  const [findCoupon, setFindCoupon] = useState("")
 
   useEffect(() => {
-    fetchCoupons(status)
-  }, [status, sponsoredName])
+    const delay = setTimeout(() => {
+      fetchCoupons(status, findCoupon)
+    }, 400)
+
+    return () => clearTimeout(delay)
+  }, [status, sponsoredName, findCoupon])
 
   function getStatus(coupon) {
     if (coupon.isCancelled) return "cancelled"
@@ -29,23 +31,19 @@ const SponsoredDetails = () => {
     return "active"
   }
 
-  async function fetchCoupons(type) {
+  async function fetchCoupons(type, search = "") {
     setLoading(true)
     try {
       const res = await fetch(
-        `${API_BASE_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=${type}`,
+        `${API_BASE_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=${type}&search=${search}`,
         {
           headers: getAuthHeader()
-        },
+        }
       )
+
       const data = await res.json()
       setMessage(data.message)
       setCoupons(data.sponsoredDetails || [])
-
-      // if (res.status == 401) {
-      //   navigate("/login")
-      //   return
-      // }
     } catch (err) {
       console.error(err)
     } finally {
@@ -61,55 +59,14 @@ const SponsoredDetails = () => {
       headers: getAuthHeader(),
       body: JSON.stringify({ secret })
     })
-    const data = await res.json()
-    // setMessage(data.message)
-    if (res.status == 401) {
+
+    if (res.status === 401) {
       navigate("/login")
       return
     }
-    fetchCoupons(status)
+
+    fetchCoupons(status, findCoupon)
   }
-
-
-  async function findCouponFunction() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/coupons/findCouponBySecret`, {
-        method: "POST",
-        headers: getAuthHeader(),
-        body: JSON.stringify({ secret: findCoupon, status: status })
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        alert(data.message)
-        return
-      }
-      if (!data.couponBySecret) return alert(data.message)
-      setCoupons(data.couponBySecret)
-    } catch (err) {
-      console.log("Catch Error", err);
-
-    }
-  }
-
-  // async function deleteAllCoupons(sponsoredName) {
-
-  //   if (!window.confirm(`Delete all coupons of ${sponsoredName}?`)) return
-  //   try {
-  //     const response = await fetch(`${API_BASE_URL}/coupons/delete`, {
-  //       method: "POST",
-  //       headers: getAuthHeader(),
-  //       body: JSON.stringify({ sponsoredName })
-  //     })
-  //     const data = await response.json()
-  //     setMessage(data.message)
-  //     alert(data.message)
-  //     navigate("/dashboard")
-  //   } catch (error) {
-  //     console.log("error in deleting", error);
-
-  //   }
-
-  // }
 
   return (
     <>
@@ -125,9 +82,16 @@ const SponsoredDetails = () => {
             value={findCoupon}
             onChange={(e) => setFindCoupon(e.target.value)}
           />
-          <button className="find-btn" onClick={findCouponFunction}>
-            Search
-          </button>
+
+          {/* Optional Clear Button */}
+          {findCoupon && (
+            <button
+              className="find-btn"
+              onClick={() => setFindCoupon("")}
+            >
+              Clear
+            </button>
+          )}
         </div>
 
         <div className="filter-group">
@@ -141,65 +105,68 @@ const SponsoredDetails = () => {
         </div>
 
         <div className="btns-container">
-          {/* <button className="delete-btn" onClick={() => deleteAllCoupons(sponsoredName)}>Delete</button> */}
-
           <button
-          className="print-layout-btn"
+            className="print-layout-btn"
             onClick={() =>
               navigate(`/sponsored-details/${sponsoredName}/print`, {
-                state: {
-                  coupons,
-                  sponsoredName
-                }
+                state: { coupons, sponsoredName }
               })
             }
           >
             Print Layout
           </button>
         </div>
-
       </div>
-
 
       <div className="table-container">
         <div className="table-wrapper">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <table className="dashboard-table">
-              <thead>
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Token</th>
+                <th>Secret</th>
+                <th>Discount Type</th>
+                <th>Discount</th>
+                <th>Services</th>
+                <th>Sponsored Name</th>
+                <th>Valid From</th>
+                <th>Valid To</th>
+                <th>Status</th>
+                <th>QR</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
                 <tr>
-                  {/* <th>ID</th> */}
-                  <th>Token</th>
-                  <th>Secret</th>
-                  <th>Discount Type</th>
-                  <th>Discount</th>
-                  <th>Services</th>
-                  <th>Sponsored Name</th>
-                  <th>Valid From</th>
-                  <th>Valid To</th>
-                  <th>Status</th>
-                  <th>QR</th>
-                  <th>Action</th>
+                  <td colSpan="11" style={{ textAlign: "center" }}>
+                    Loading...
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {coupons.map((coupon) => (
+              ) : coupons.length === 0 ? (
+                <tr>
+                  <td colSpan="11" style={{ textAlign: "center" }}>
+                    No coupon found
+                  </td>
+                </tr>
+              ) : (
+                coupons.map((coupon) => (
                   <tr key={coupon._id}>
-                    {/* <td>{coupon._id}</td> */}
                     <td>{coupon.token}</td>
                     <td>{coupon.secret}</td>
                     <td>{coupon.discountType}</td>
                     <td>{coupon.discountValue}</td>
-                    <td>{coupon.discountType === "service" ? (
-                      <ul style={{ paddingLeft: "16px" }}>
-                        {coupon.services.map((service, index) => (
-                          <li key={index}>{service}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      "-"
-                    )}
+                    <td>
+                      {coupon.discountType === "service" ? (
+                        <ul style={{ paddingLeft: "16px" }}>
+                          {coupon.services.map((service, index) => (
+                            <li key={index}>{service}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        "-"
+                      )}
                     </td>
                     <td>{coupon.sponsoredName}</td>
                     <td>{new Date(coupon.validFrom).toLocaleDateString()}</td>
@@ -216,16 +183,18 @@ const SponsoredDetails = () => {
                       />
                     </td>
                     <td>
-                      <button disabled={getStatus(coupon) !== "active"}
+                      <button
+                        disabled={getStatus(coupon) !== "active"}
                         onClick={() => cancelCoupon(coupon.secret)}
-                      >Cancel</button>
+                      >
+                        Cancel
+                      </button>
                     </td>
-
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </>
