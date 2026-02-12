@@ -36,7 +36,7 @@ const CreateCoupons = () => {
         }
         
         try {
-            const response = await fetch(`${API_BASE_URL}/coupons/create`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/coupons/create`, {
                 method: "POST",
                 headers: getAuthHeader(),
                 body:JSON.stringify(payload)

@@ -15,7 +15,7 @@ const SponsoredPrint = () => {
 
   async function fetchCoupons() {
     const res = await fetch(
-      `${API_BASE_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=all`,
+      `${import.meta.env.VITE_API_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=all`,
       { headers: getAuthHeader() }
     )
     const data = await res.json()

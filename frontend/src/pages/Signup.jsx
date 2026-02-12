@@ -26,7 +26,7 @@ const handleSubmit = async (e)=>{
   if(!contactNumber) return setMessage("Contact number is required")
   
   try{
-    const response = await fetch("http://localhost:8000/signup",{
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`,{
       method: "POST",
       headers:{
         "Content-Type": "application/json"

@@ -67,7 +67,7 @@ const ValidateCard = () => {
   async function validateBySecret() {
       setLoading(true )
     try {
-      const response = await fetch(`${API_BASE_URL}/coupons/validate`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/coupons/validate`, {
         method: "POST",
         headers: getAuthHeader(),
         body: JSON.stringify({ secret })

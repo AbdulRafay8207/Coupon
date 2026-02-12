@@ -18,7 +18,7 @@ const handleSubmit = async (e)=>{
   if(!password) return setMessage("Password is required")
   
   try{
-    const response = await fetch(`${API_BASE_URL}/login`,{
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/login`,{
       method: "POST",
       headers:{
         "Content-Type": "application/json"

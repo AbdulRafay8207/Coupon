@@ -28,7 +28,7 @@ const AddLabStaff = () => {
         setLoading(true)
         
         try {
-            const response = await fetch(`${API_BASE_URL}/create-lab`,{
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/create-lab`,{
                 method: "POST",
                 headers: getAuthHeader(),
                 body: JSON.stringify(form)

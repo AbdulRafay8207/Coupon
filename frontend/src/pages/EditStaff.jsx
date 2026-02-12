@@ -27,7 +27,7 @@ const EditLabStaff = () => {
 
   const fetchStaff = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/staff/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/staff/${id}`, {
         headers: getAuthHeader()
       })
       const data = await response.json()

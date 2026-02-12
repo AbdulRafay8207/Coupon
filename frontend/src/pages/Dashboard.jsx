@@ -19,7 +19,7 @@
       setLoading(true)
       try {
         const res = await fetch(
-          `${API_BASE_URL}/coupons/testStatus`,
+          `${import.meta.env.VITE_API_URL}/coupons/testStatus`,
           {
             headers: getAuthHeader()
           },

@@ -16,7 +16,7 @@ const LabDashboard = () => {
   const fetchDashboard = async (from = "", to = "") => {
     try {
       setLoading(true)
-      let url = "http://localhost:8000/coupons/lab-dashboard"
+      let url = `${import.meta.env.VITE_API_URL}/lab-dashboard`
       if (from && to) {
         url += `?from=${from}&to=${to}`
       }

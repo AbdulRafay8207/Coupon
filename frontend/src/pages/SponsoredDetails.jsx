@@ -35,7 +35,7 @@ const SponsoredDetails = () => {
     setLoading(true)
     try {
       const res = await fetch(
-        `${API_BASE_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=${type}&search=${search}`,
+        `${import.meta.env.VITE_API_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=${type}&search=${search}`,
         {
           headers: getAuthHeader()
         }
@@ -54,7 +54,7 @@ const SponsoredDetails = () => {
   async function cancelCoupon(secret) {
     if (!window.confirm(`Cancel coupon ${secret}?`)) return
 
-    const res = await fetch(`${API_BASE_URL}/coupons/cancel`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/coupons/cancel`, {
       method: "POST",
       headers: getAuthHeader(),
       body: JSON.stringify({ secret })

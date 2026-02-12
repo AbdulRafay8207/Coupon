@@ -21,7 +21,7 @@ const StaffList = () => {
     async function fetchStaffList(status, search) {
         setLoading(true)
         try {
-            const response = await fetch(`${API_BASE_URL}/staff-list?status=${status}&search=${search || ""}`,
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/staff-list?status=${status}&search=${search || ""}`,
                 {
                     headers: getAuthHeader()
                 },
@@ -41,7 +41,7 @@ const StaffList = () => {
 
     async function inactivateStaff(id) {
         try {
-            const response = await fetch(`${API_BASE_URL}/staff-status`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/staff-status`, {
                 method: "POST",
                 headers: getAuthHeader(),
                 body: JSON.stringify({ id, status: "Inactive" })
@@ -56,7 +56,7 @@ const StaffList = () => {
 
     async function activateStaff(id) {
         try {
-            const response = await fetch(`${API_BASE_URL}/staff-status`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/staff-status`, {
                 method: "POST",
                 headers: getAuthHeader(),
                 body: JSON.stringify({ id, status: "Active" })
