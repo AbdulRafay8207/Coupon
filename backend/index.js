@@ -7,17 +7,13 @@ const cookieParser = require("cookie-parser")
 const couponsRoute = require("./routes/couponRouter")
 const userRoute = require("./routes/userRouter")
 
-const path = require("path")
-const {connectMongoDB} = require('./connection')
-const jwt = require("jsonwebtoken")
-const bcrypt = require("bcryptjs")
 const {restrictLoggedInUserOnly} = require("./middleware/authMiddleware")
 const { connectToDataBase } = require("./db")
 
 const app = express()
 
 app.use(cors({
-  origin: true,
+  origin: process.env.FRONT_END_URL,
   credentials: true
 }));
 app.use(express.json())
