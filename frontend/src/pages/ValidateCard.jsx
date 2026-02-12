@@ -32,7 +32,7 @@ const ValidateCard = () => {
 
 
           const response = await fetch(
-            `${API_BASE_URL}/coupons/validate`,
+            `${import.meta.env.VITE_API_URL}/coupons/validate`,
             {
               method: "POST",
               headers: getAuthHeader(),
