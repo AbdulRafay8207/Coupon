@@ -72,7 +72,7 @@ const CreateCoupons = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="discountValue">Discount Value (%)</label>
+                    <label htmlFor="discountValue">Discount Value (% OR Rs.)</label>
                     <input type="text" name="discountValue" id="discountValue" onChange={handleChange} />
                 </div>
 
@@ -92,7 +92,7 @@ const CreateCoupons = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="quantity">sponsored Name</label>
+                    <label htmlFor="quantity">Sponsored Name</label>
                     <input type="text" name="sponsoredName" id="sponsoredName" onChange={handleChange} />
                 </div>
 

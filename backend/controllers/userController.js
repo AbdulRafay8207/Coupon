@@ -35,9 +35,13 @@ async function handleUserSignIn(req,res){
 async function handleUserLogin(req,res){
     const { email, password} = req.body
     const user = await User.findOne({email})
+    if(!user){
+        return res.json({message: "Invalid email or password"})
+    }
     const isMatch = await bcrypt.compare(password, user.password)
-    if(!user || !isMatch){
-        return res.json({message: "Invalid username or password"})
+    
+    if(!isMatch){
+        return res.json({message: "Invalid email or password"})
     }
 
     if(user.status === "Inactive") return res.json({message: "Your account is inactive. Contact Admin"})

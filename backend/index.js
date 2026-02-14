@@ -17,7 +17,10 @@ const { connectToDataBase } = require("./db")
 const app = express()
 
 app.use(cors({
-  origin: "https://coupon-five-henna.vercel.app",
+  origin: [
+    "https://coupon-five-henna.vercel.app",
+    "http://localhost:5176",
+  ],
   credentials: true
 }));
 app.use(express.json())

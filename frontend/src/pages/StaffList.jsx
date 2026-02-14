@@ -68,7 +68,7 @@ const StaffList = () => {
         }
     }
 
-    function clearFilter(){
+    function clearFilter() {
         setFindStaff("")
         setStatus("All")
         return
@@ -103,9 +103,10 @@ const StaffList = () => {
             </div>
 
             <div className="table-container">
-                {loading ? (
+                {loading ? <div className="staff-loading">
+                    <span className="staff-loader"></span>
                     <p>Loading...</p>
-                ) : (
+                </div> : (
                     <table className="table">
                         <thead>
                             <tr>

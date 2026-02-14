@@ -10,13 +10,18 @@ const Login = () => {
   const [password,setPassword] = useState("")
   const [message, setMessage] = useState(null)
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
 
 const handleSubmit = async (e)=>{
   e.preventDefault()
+  console.log("Loading after e",loading);
+  
+  console.log("Loading after set",loading);
   if(!email) return setMessage("Email is required")
   if(!password) return setMessage("Password is required")
   
-  try{
+    try{
+      setLoading(true)
     const response = await fetch(`${import.meta.env.VITE_API_URL}/login`,{
       method: "POST",
       headers:{
@@ -45,7 +50,8 @@ const handleSubmit = async (e)=>{
     
   }catch(err){
     console.log("something wrong in catch",err);
-    
+  }finally{
+    setLoading(false)
   }
 }
 
@@ -71,7 +77,7 @@ const handleSubmit = async (e)=>{
             </div>
           </div>
           
-          <button>Login</button>
+          <button className="submit-btn" disabled={loading}> {loading ? <span className="spinner"></span> : "Login"} </button>
         </form>
     </div>
     </>

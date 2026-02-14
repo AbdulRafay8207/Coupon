@@ -16,7 +16,7 @@ const LabDashboard = () => {
   const fetchDashboard = async (from = "", to = "") => {
     try {
       setLoading(true)
-      let url = `${import.meta.env.VITE_API_URL}/lab-dashboard`
+      let url = `${import.meta.env.VITE_API_URL}/coupons/lab-dashboard`
       if (from && to) {
         url += `?from=${from}&to=${to}`
       }
@@ -134,7 +134,10 @@ const LabDashboard = () => {
 
       <div className="lab-table-container">
         <div className="lab-table-wrapper">
-          {loading ? <p>Loading...</p> : (
+          {loading ? <div className="lab-loading">
+            <span className="loader"></span>
+            <p>Loading data...</p>
+          </div> : (
             <table className="lab-dashboard-table">
               <thead>
                 <tr>
@@ -147,6 +150,7 @@ const LabDashboard = () => {
                 </tr>
               </thead>
               <tbody>
+
                 {data.map((item) => (
                   <tr key={item._id}>
                     <td>{item.token}</td>

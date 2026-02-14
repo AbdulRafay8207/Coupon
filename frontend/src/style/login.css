@@ -125,6 +125,7 @@ div:has(.login-form-input:focus) > label{
 .signup:hover{
     text-decoration: underline;
 }
+
 @media(max-width: 1100px){
     #container{
         width: min(600px, 100%);
