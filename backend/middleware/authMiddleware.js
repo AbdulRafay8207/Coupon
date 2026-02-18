@@ -1,17 +1,22 @@
-const { getUser } = require("../service/auth")
+const { verifyToken } = require("../service/auth")
 const User = require("../models/UsersModel")
 
 async function restrictLoggedInUserOnly(req,res,next){
-    const userUid = req.headers["authorization"]
-    if(!userUid) return res.status(401).json({message: "Unauthorized"})
-    const token = userUid.split(" ")[1]
-    const user = getUser(token)
-    if(!user) return res.status(401).json({message: "Unauthorized"})
+    const authHeader = req.headers.authorization
+    
+    if(!authHeader) return res.status(401).json({message: "Unauthorized"})
 
-    const isActiveUser = await User.findById(user._id)
+    const accessToken = authHeader.split(" ")[1]
+
+    const decoded = verifyToken(accessToken)
+
+    if(!decoded) return res.status(401).json({message: "Invalid or Expired token"})
+
+    const isActiveUser = await User.findById(decoded._id)
+
     if(isActiveUser.status === "Inactive") return res.status(403).json({message: "Your account is inactive"})
 
-    req.user = user
+    req.user = decoded
     return next()
 }
 

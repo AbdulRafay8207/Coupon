@@ -1,10 +1,12 @@
 import { Navigate, Outlet } from "react-router"
+import { useAuth } from "../context/AuthContext"
 
 const PublicRoute = () => {
-    const token = localStorage.getItem("token")
-    const role = localStorage.getItem("role")
-    if(token){
-        if(role === "admin"){
+    const {auth, loading} = useAuth()
+
+    if(loading) return <div className="spinner">Loading...</div>
+    if(auth.accessToken){
+        if(auth.role === "admin"){
             return <Navigate to={"/dashboard"} replace/>
         }
         return <Navigate to={"/validate"} replace/>

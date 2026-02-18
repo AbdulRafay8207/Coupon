@@ -1,5 +1,5 @@
 const User = require("../models/UsersModel")
-const {setUser} = require("../service/auth")
+const {generaetAccessToken, generateRefreshToken, verifyToken} = require("../service/auth")
 const bcrypt = require("bcrypt")
 
 
@@ -8,11 +8,10 @@ const bcrypt = require("bcrypt")
 async function handleUserSignIn(req,res){
     const {username, email, password,confirmPassword, contactNumber} = req.body
     if(password !== confirmPassword) return res.status(400).json({message: "Confirm password did not match"})
+
     const isExist = await User.find({email})
-    console.log("Already exist",isExist);
     if(isExist.length > 0) return res.status(400).json({message: "A user with this email already exist"})
     
-
     const hashedPassoword = await bcrypt.hash(password,10)
     try {
         await User.create({
@@ -34,21 +33,34 @@ async function handleUserSignIn(req,res){
 
 async function handleUserLogin(req,res){
     const { email, password} = req.body
+console.log("NODE_ENV =", process.env.NODE_ENV)
+
     const user = await User.findOne({email})
     if(!user){
         return res.json({message: "Invalid email or password"})
     }
+
     const isMatch = await bcrypt.compare(password, user.password)
-    
     if(!isMatch){
         return res.json({message: "Invalid email or password"})
     }
 
     if(user.status === "Inactive") return res.json({message: "Your account is inactive. Contact Admin"})
 
-    const token = setUser(user)
+    const accessToken = generaetAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
+
+    res.cookie("refreshToken", refreshToken,{
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+        maxAge: 1000*60*60*1
+    })
+    console.log("Log of Cookie ======>", res.cookie);
+    console.log("Log of Cookiessss ======>", res.cookies);
     
-    return res.json({message: "Login successfuly",uid: token})
+    
+    return res.json({message: "Login successfuly",accessToken, role: user.role, username: user.username})
 }
 
 // Add Lab Staff-----------------------------------------------------------------------------------------------------------------------
@@ -180,6 +192,28 @@ async function getStaffById(req, res) {
 }
 
 
+//LogOut User-------------------------------------------------------------------------------------------------------------------------------
+
+async function logoutUser(req,res){
+    res.clearCookie("refreshToken")
+    res.json({message:"Successfully logout"})
+}
+
+//Refresh Access Token------------------------------------------------------------------------------------------------------------------------------
+
+async function refreshAccessToken(req,res){
+    const refreshToken = req.cookies.refreshToken
+    if(!refreshToken) return res.status(401).json({message: "No refresh Token"})
+
+        try {
+            const decoded = verifyToken(refreshToken)
+            const newAccessToken = generaetAccessToken(decoded)
+            return res.json({accessToken: newAccessToken, username: decoded.username, role: decoded.role})
+        } catch (error) {
+            console.log("Error in refreshAccessToken", error);
+        }
+}
+
 module.exports = {
     handleUserSignIn,
     handleUserLogin,
@@ -188,5 +222,7 @@ module.exports = {
     handleStaffStatus,
     findStaff,
     editStaff,
-    getStaffById
+    getStaffById,
+    logoutUser,
+    refreshAccessToken
 }

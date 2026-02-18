@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/Dashboard.css"
+import { fetchWithRefresh } from "../utils/api.js"
+import { useAuth } from "../context/AuthContext"
 
 const TestDashboard = () => {
   const navigate = useNavigate()
+
+  const {auth, setAuth} = useAuth()
 
   const [loading, setLoading] = useState(false)
   const [sponsoredSummary, setSponsoredSummary] = useState([])
@@ -17,12 +21,12 @@ const TestDashboard = () => {
   async function fetchCoupons() {
     setLoading(true)
     try {
-      const res = await fetch(
+      const res = await fetchWithRefresh(
         `${import.meta.env.VITE_API_URL}/coupons/testStatus`,
         {
-          headers: getAuthHeader()
-        },
-      )
+          headers: getAuthHeader(auth.accessToken)
+        }, setAuth, navigate)
+
       const data = await res.json()
       setSponsoredSummary(data.summary)
     } catch (err) {
@@ -40,17 +44,12 @@ const TestDashboard = () => {
   async function cancelSponsored(sponsoredName) {
     if (!window.confirm(`Cancel all coupons of ${sponsoredName}?`)) return
 
-    const res = await fetch(`${API_BASE_URL}/coupons/cancel`, {
+    const res = await fetchWithRefresh(`${API_BASE_URL}/coupons/cancel`, {
       method: "POST",
-      headers: getAuthHeader(),
+      headers: getAuthHeader(auth.accessToken),
       body: JSON.stringify({ sponsoredName })
-    })
+    }, setAuth, navigate)
     const data = await res.json()
-    // setMessage(data.message)
-    // if (res.status == 401) {
-    //   navigate("/login")
-    //   return
-    // }
     alert(data.message)
     setCancelArea("")
     fetchCoupons()

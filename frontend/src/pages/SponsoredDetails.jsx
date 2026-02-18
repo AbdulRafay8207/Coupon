@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
 import { QRCodeCanvas } from "qrcode.react"
 import { useNavigate, useParams } from "react-router"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/Dashboard.css"
 import FixGrammer from "../components/FixGrammer"
+import { useAuth } from "../context/AuthContext"
+import { fetchWithRefresh } from "../utils/api.js"
 
 const SponsoredDetails = () => {
   const navigate = useNavigate()
@@ -14,6 +16,8 @@ const SponsoredDetails = () => {
   const [status, setStatus] = useState("all")
   const [loading, setLoading] = useState(false)
   const [findCoupon, setFindCoupon] = useState("")
+
+  const {auth, setAuth} = useAuth()
 
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -33,11 +37,12 @@ const SponsoredDetails = () => {
   async function fetchCoupons(type, search = "") {
     setLoading(true)
     try {
-      const res = await fetch(
+      const res = await fetchWithRefresh(
         `${import.meta.env.VITE_API_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=${type}&search=${search}`,
         {
-          headers: getAuthHeader()
-        }
+          headers: getAuthHeader(auth.accessToken)
+        },
+        setAuth, navigate
       )
 
       const data = await res.json()
@@ -53,11 +58,11 @@ const SponsoredDetails = () => {
   async function cancelCoupon(secret) {
     if (!window.confirm(`Cancel coupon ${secret}?`)) return
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/coupons/cancel`, {
+    const res = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/coupons/cancel`, {
       method: "POST",
-      headers: getAuthHeader(),
+      headers: getAuthHeader(auth.accessToken),
       body: JSON.stringify({ secret })
-    })
+    },setAuth, navigate)
 
     if (res.status === 401) {
       navigate("/login")

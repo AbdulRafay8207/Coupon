@@ -37,7 +37,7 @@ body{
  
 #container{
     box-sizing: border-box;
-    width: max(40%, 600px);
+    width: min(600px, 100%);
     background-color: var(--white);
     height: 100vh;
     padding: 10px;

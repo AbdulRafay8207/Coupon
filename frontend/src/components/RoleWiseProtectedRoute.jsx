@@ -1,12 +1,15 @@
 import { Navigate, Outlet } from "react-router"
+import { useAuth } from "../context/AuthContext"
 
 const RoleWiseProtectedRoute = ({allowedRole}) => {
-    const token = localStorage.getItem("token")
-    const role = localStorage.getItem("role")
+    const {auth, loading} = useAuth()
 
-    if(!token) return <Navigate to={"/login"} replace/>
-    if(!allowedRole.includes(role)) return <Navigate to={"/validate"} replace/>
+    if(loading) return <div className="spinner">Loading...</div>
 
+    if(!auth.accessToken) return <Navigate to={"/login"} replace/>
+
+    if(!allowedRole.includes(auth.role)) return <Navigate to={"/validate"} replace/>
+    
     return <Outlet/>
 }
 

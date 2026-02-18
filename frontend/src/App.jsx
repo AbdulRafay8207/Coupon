@@ -20,6 +20,7 @@ import TestDashboard from "./pages/Dashboard"
 import PrintLayout from "./pages/PrintLayout"
 import EditStaff from "./pages/EditStaff"
 import LabDashboard from "./pages/LabDashboard"
+import { AuthProvider } from "./context/AuthContext"
 
 const App = () => {
   const router = createBrowserRouter(
@@ -63,7 +64,11 @@ const App = () => {
     )
   )
 
-  return <RouterProvider router={router} />
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  ) 
 }
 
 export default App

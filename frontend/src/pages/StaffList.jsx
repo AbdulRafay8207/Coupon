@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/StaffList.css"
 import { useLocation, useNavigate } from "react-router"
+import { useAuth } from "../context/AuthContext"
+import { fetchWithRefresh } from "../utils/api.js"
 
 const StaffList = () => {
     const [loading, setLoading] = useState(false)
@@ -13,6 +15,8 @@ const StaffList = () => {
     const location = useLocation()
     const navigate = useNavigate()
 
+    const {auth, setAuth} = useAuth()
+
     useEffect(() => {
         fetchStaffList(status, findStaff)
     }, [status, findStaff, location.key])
@@ -20,10 +24,11 @@ const StaffList = () => {
     async function fetchStaffList(status, search) {
         setLoading(true)
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/staff-list?status=${status}&search=${search || ""}`,
+            const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/staff-list?status=${status}&search=${search || ""}`,
                 {
-                    headers: getAuthHeader()
+                    headers: getAuthHeader(auth.accessToken)
                 },
+                setAuth, navigate
             )
             const data = await response.json()
             setMessage(data.message)
@@ -40,11 +45,11 @@ const StaffList = () => {
 
     async function inactivateStaff(id) {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/staff-status`, {
+            const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/staff-status`, {
                 method: "POST",
-                headers: getAuthHeader(),
+                headers: getAuthHeader(auth.accessToken),
                 body: JSON.stringify({ id, status: "Inactive" })
-            })
+            }, setAuth, navigate)
             const data = await response.json()
             setMessage(data.message)
             fetchStaffList(status)
@@ -55,11 +60,11 @@ const StaffList = () => {
 
     async function activateStaff(id) {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/staff-status`, {
+            const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/staff-status`, {
                 method: "POST",
-                headers: getAuthHeader(),
+                headers: getAuthHeader(auth.accessToken),
                 body: JSON.stringify({ id, status: "Active" })
-            })
+            }, setAuth, navigate)
             const data = await response.json()
             setMessage(data.message)
             fetchStaffList(status)

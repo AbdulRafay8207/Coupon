@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import getAuthHeader from "../components/GetAuthHeader";
+import getAuthHeader from "../utils/getAuthHeader.js";
 import "../style/validate.css";
+import { fetchWithRefresh } from "../utils/api.js";
+import { useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 const ValidateCard = () => {
   const qrRef = useRef(null);
@@ -14,6 +17,9 @@ const ValidateCard = () => {
   const [scannedQrData, setScannedQrData] = useState('')
 
   const [borderState, setBorderState] = useState("idle"); 
+
+  const navigate = useNavigate()
+  const {auth, setAuth} = useAuth()
   // idle | detecting | success | error
 
   // ---------------- VALIDATE COUPON ----------------
@@ -21,13 +27,14 @@ const ValidateCard = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
+      const response = await fetchWithRefresh(
         `${import.meta.env.VITE_API_URL}/coupons/validate`,
         {
           method: "POST",
-          headers: getAuthHeader(),
+          headers: getAuthHeader(auth.accessToken),
           body: JSON.stringify(payload)
-        }
+        },
+        setAuth,navigate
       );
 
       const data = await response.json();
@@ -97,11 +104,11 @@ const ValidateCard = () => {
     console.log("check");
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/coupons/redeem`,{
+      const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/coupons/redeem`,{
         method: "POST",
         headers: getAuthHeader(),
         body: JSON.stringify({id: scannedQrData._id})
-      })
+      }, setAuth, navigate)
       const data = await response.json()
       setMessageType(data.type)
       setMessage(data.message)

@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react"
 import * as XLSX from "xlsx"
 import { saveAs } from "file-saver"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/LabDashboard.css"
+import { useNavigate } from "react-router"
+import { useAuth } from "../context/AuthContext"
+import { fetchWithRefresh } from "../utils/api.js"
 
 const LabDashboard = () => {
   const [data, setData] = useState([])
@@ -13,6 +16,9 @@ const LabDashboard = () => {
   const [toDate, setToDate] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const navigate = useNavigate()
+  const {auth, setAuth} = useAuth()
+
   const fetchDashboard = async (from = "", to = "") => {
     try {
       setLoading(true)
@@ -21,9 +27,9 @@ const LabDashboard = () => {
         url += `?from=${from}&to=${to}`
       }
 
-      const res = await fetch(url, {
-        headers: getAuthHeader()
-      })
+      const res = await fetchWithRefresh(url, {
+        headers: getAuthHeader(auth.accessToken)
+      },setAuth, navigate)
 
       const data = await res.json()
 

@@ -1,15 +1,22 @@
 const jwt = require("jsonwebtoken")
 
 const SECRET = process.env.JWT_SECRET
-function setUser(user){
+
+function generaetAccessToken(user){
     return jwt.sign({
         _id: user._id,
-        username: user.username,
-        email: user.email,
         role: user.role
-    },SECRET, {expiresIn: "1h"})
+    },SECRET, {expiresIn: "15m"})
 }
-function getUser(token){
+
+function generateRefreshToken(user){
+    return jwt.sign({
+        _id: user._id,
+        role: user.role
+    },SECRET,{expiresIn: "1h"})
+}
+
+function verifyToken(token){
     if(!token) return null
     try {
         return jwt.verify(token, SECRET)
@@ -18,6 +25,7 @@ function getUser(token){
     }
 }
 module.exports = {
-    setUser,
-    getUser
+    generaetAccessToken,
+    generateRefreshToken,
+    verifyToken
 }

@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import logo from "../assets/logo2.png"
 import "../style/signup.css"
+import { fetchWithRefresh } from "../utils/api.js"
+import { useAuth } from "../context/AuthContext"
 
 const Signup = () => {
   const navigate = useNavigate()
@@ -16,6 +18,8 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  const {auth, setAuth} = useAuth()
+
 const handleSubmit = async (e)=>{
   e.preventDefault()
   if(!username) return setMessage("Username is required")
@@ -26,13 +30,13 @@ const handleSubmit = async (e)=>{
   if(!contactNumber) return setMessage("Contact number is required")
   
   try{
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`,{
+    const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/signup`,{
       method: "POST",
       headers:{
         "Content-Type": "application/json"
       },
       body: JSON.stringify({username,email,password,confirmPassword,contactNumber})
-    })
+    },setAuth, navigate)
     const data = await response.json()
     setMessage(data.message)
     console.log(message);

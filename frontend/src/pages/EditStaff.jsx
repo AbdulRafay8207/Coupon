@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/AddLabStaff.css"
 import { useNavigate, useParams } from "react-router"
+import { fetchWithRefresh } from "../utils/api.js"
+import { useAuth } from "../context/AuthContext"
 
 const EditLabStaff = () => {
   const { id } = useParams()
@@ -20,15 +22,17 @@ const EditLabStaff = () => {
   const [messageType, setMessageType] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const {auth, setAuth} = useAuth()
+
   useEffect(() => {
     fetchStaff()
   }, [])
 
   const fetchStaff = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/staff/${id}`, {
-        headers: getAuthHeader()
-      })
+      const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/staff/${id}`, {
+        headers: getAuthHeader(auth.accessToken)
+      }, setAuth, navigate)
       const data = await response.json()
 
       if (!response.ok) {
@@ -66,11 +70,11 @@ const EditLabStaff = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/edit-staff/${id}`, {
+      const response = await fetchWithRefresh(`${API_BASE_URL}/edit-staff/${id}`, {
         method: "PUT",
-        headers: getAuthHeader(),
+        headers: getAuthHeader(auth.accessToken),
         body: JSON.stringify(form)
-      })
+      },setAuth, navigate)
 
       const data = await response.json()
       setMessageType(data.type)

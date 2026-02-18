@@ -1,7 +1,9 @@
 import { useState } from "react"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/AddLabStaff.css"
 import { useNavigate } from "react-router"
+import { fetchWithRefresh } from "../utils/api.js"
+import { useAuth } from "../context/AuthContext"
 
 const AddLabStaff = () => {
     const [form, setForm] = useState({
@@ -16,6 +18,8 @@ const AddLabStaff = () => {
     const [messageType, setMessageType] = useState("")
     const [loading, setLoading] = useState(false)
 
+    const {auth, setAuth} = useAuth()
+
     const navigate = useNavigate()
 
     const handleChange = (e)=>{
@@ -27,11 +31,11 @@ const AddLabStaff = () => {
         setLoading(true)
         
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/create-lab`,{
+            const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/create-lab`,{
                 method: "POST",
-                headers: getAuthHeader(),
+                headers: getAuthHeader(auth.accessToken),
                 body: JSON.stringify(form)
-            })
+            }, setAuth, navigate)
             const data = await response.json()
             setMessageType(data.type)
             setMessage(data.message)

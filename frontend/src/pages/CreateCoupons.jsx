@@ -1,10 +1,15 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/CreateCoupons.css"
+import { useAuth } from "../context/AuthContext"
+import { fetchWithRefresh } from "../utils/api.js"
 
 const CreateCoupons = () => {
     const navigate = useNavigate()
+
+    const {auth, setAuth} = useAuth()
+
     const [formData, setFormData] = useState({
         discountValue: "",
         area: "",
@@ -35,11 +40,11 @@ const CreateCoupons = () => {
         }
         
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/coupons/create`, {
+            const response = await fetchWithRefresh(`${import.meta.env.VITE_API_URL}/coupons/create`, {
                 method: "POST",
-                headers: getAuthHeader(),
+                headers: getAuthHeader(auth.accessToken),
                 body:JSON.stringify(payload)
-            })
+            },setAuth, navigate)
 
             const data = await response.json()
             setMessageType(data.type)

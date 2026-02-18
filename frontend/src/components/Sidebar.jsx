@@ -1,18 +1,32 @@
 import { useState } from "react"
-import { NavLink } from "react-router"
+import { NavLink, useNavigate } from "react-router"
 import logo from "../assets/logo2.png"
 import "../style/Dashboard.css"
+import { useAuth } from "../context/AuthContext"
 
 
 const Sidebar = () => {
-    const role = localStorage.getItem("role")
-    const username = localStorage.getItem("username")
+    const {auth, setAuth} = useAuth()
+
+    const navigate = useNavigate()
+
+    const role = auth.role
+    const username = auth.username
+    
     const [collapsed, setCollapsed] = useState(false)
 
-    function logout(){
-        localStorage.removeItem("token")
-        localStorage.removeItem("role")
-        window.location.href = "/login"
+    async function logout(){
+        try {
+            setAuth({accessToken: null, username: null, role: null})
+
+            const response = fetch(`${import.meta.env.VITE_API_URL}/logout`,{
+                method: "POST",
+                credentials: "include",
+            })
+            navigate("/login")
+        } catch (error) {
+            console.log("Error in logout", error);   
+        }
     }
 
   return (

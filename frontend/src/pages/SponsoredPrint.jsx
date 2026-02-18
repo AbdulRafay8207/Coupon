@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { QRCodeCanvas } from "qrcode.react"
-import getAuthHeader from "../components/GetAuthHeader"
+import getAuthHeader from "../utils/getAuthHeader.js"
 import "../style/SponsoredPrint.css"
+import { fetchWithRefresh } from "../utils/api.js"
+import { useAuth } from "../context/AuthContext.jsx"
 
 const SponsoredPrint = () => {
   const { sponsoredName } = useParams()
   const [coupons, setCoupons] = useState([])
+
+  const navigate = useNavigate()
+  const {auth, setAuth} = useAuth()
 
   useEffect(() => {
     fetchCoupons()
   }, [sponsoredName])
 
   async function fetchCoupons() {
-    const res = await fetch(
+    const res = await fetchWithRefresh(
       `${import.meta.env.VITE_API_URL}/coupons/sponsored-details?sponsoredName=${sponsoredName}&type=all`,
-      { headers: getAuthHeader() }
+      { headers: getAuthHeader(auth.accessToken) },
+      setAuth, navigate
     )
     const data = await res.json()
     setCoupons(data.sponsoredDetails || [])
