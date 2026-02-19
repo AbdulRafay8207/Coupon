@@ -1,18 +1,18 @@
 const User = require("../models/UsersModel")
-const {generaetAccessToken, generateRefreshToken, verifyToken} = require("../service/auth")
+const { generaetAccessToken, generateRefreshToken, verifyToken } = require("../service/auth")
 const bcrypt = require("bcrypt")
 
 
 // Handle Signin--------------------------------------------------------------------------------------------------------------
 
-async function handleUserSignIn(req,res){
-    const {username, email, password,confirmPassword, contactNumber} = req.body
-    if(password !== confirmPassword) return res.status(400).json({message: "Confirm password did not match"})
+async function handleUserSignIn(req, res) {
+    const { username, email, password, confirmPassword, contactNumber } = req.body
+    if (password !== confirmPassword) return res.status(400).json({ message: "Confirm password did not match" })
 
-    const isExist = await User.find({email})
-    if(isExist.length > 0) return res.status(400).json({message: "A user with this email already exist"})
-    
-    const hashedPassoword = await bcrypt.hash(password,10)
+    const isExist = await User.find({ email })
+    if (isExist.length > 0) return res.status(400).json({ message: "A user with this email already exist" })
+
+    const hashedPassoword = await bcrypt.hash(password, 10)
     try {
         await User.create({
             username,
@@ -22,63 +22,62 @@ async function handleUserSignIn(req,res){
             contactNumber,
             role: "admin"
         })
-        return res.json({message: "Successfully Signin"})
+        return res.json({ message: "Successfully Signin" })
     } catch (error) {
-        console.log("error in handleUserSignin function",error);
-        return res.json({message: "Something went wrong"})
+        console.log("error in handleUserSignin function", error);
+        return res.json({ message: "Something went wrong" })
     }
 }
 
 // Handle Login------------------------------------------------------------------------------------------------------------------------------------------
 
-async function handleUserLogin(req,res){
-    const { email, password} = req.body
-console.log("NODE_ENV =", process.env.NODE_ENV)
+async function handleUserLogin(req, res) {
+    const { email, password } = req.body
+    console.log("NODE_ENV =", process.env.NODE_ENV)
 
-    const user = await User.findOne({email})
-    if(!user){
-        return res.json({message: "Invalid email or password"})
+    const user = await User.findOne({ email })
+    if (!user) {
+        return res.json({ message: "Invalid email or password" })
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
-    if(!isMatch){
-        return res.json({message: "Invalid email or password"})
+    if (!isMatch) {
+        return res.json({ message: "Invalid email or password" })
     }
 
-    if(user.status === "Inactive") return res.json({message: "Your account is inactive. Contact Admin"})
+    if (user.status === "Inactive") return res.json({ message: "Your account is inactive. Contact Admin" })
 
     const accessToken = generaetAccessToken(user)
     const refreshToken = generateRefreshToken(user)
 
-    res.cookie("refreshToken", refreshToken,{
+    res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: false,
         sameSite: "Lax",
-        maxAge: 1000*60*60*1
+        maxAge: 1000 * 60 * 60 * 1
     })
-    console.log("Log of Cookie ======>", res.cookie);
-    console.log("Log of Cookiessss ======>", res.cookies);
-    
-    
-    return res.json({message: "Login successfuly",accessToken, role: user.role, username: user.username})
+
+    return res.json({ message: "Login successfuly", accessToken, role: user.role, username: user.username })
 }
 
 // Add Lab Staff-----------------------------------------------------------------------------------------------------------------------
 
-async function createLabTech(req,res){
-    const {username, email, branchName, contactNumber, password, confirmPassword} = req.body
-    if(!username || !password || !email){
-        return res.status(400).json({message: "All fields are required", type:"error"})
-    }
-    if(password !== confirmPassword) return res.status(400).json({message: "Confirm Password did not match", type:"error"})
+async function createLabTech(req, res) {
+    console.log("here i am in createlab route");
 
-    const existingUser = await User.findOne({email})
-    if(existingUser){
-        return res.status(400).json({message: "A user with that email already exist", type:"error"})
+    const { username, email, branchName, contactNumber, password, confirmPassword } = req.body
+    if (!username || !password || !email) {
+        return res.status(400).json({ message: "All fields are required", type: "error" })
     }
-    
-    const hashedPassoword = await bcrypt.hash(password,10)
-    
+    if (password !== confirmPassword) return res.status(400).json({ message: "Confirm Password did not match", type: "error" })
+
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+        return res.status(400).json({ message: "A user with that email already exist", type: "error" })
+    }
+
+    const hashedPassoword = await bcrypt.hash(password, 10)
+
     await User.create({
         username,
         email,
@@ -88,71 +87,71 @@ async function createLabTech(req,res){
         role: "lab"
     })
 
-    return res.status(200).json({message: "Lab technician successfully created", type:"success"})
+    return res.status(200).json({ message: "Lab technician successfully created", type: "success" })
 }
 
 //Get Staff By Status----------------------------------------------------------------------------------------------------------------------------------
 
-async function getStaffByStatus(req,res){
-    const {status, search} = req.query
-    let filter = {role: "lab"}
-    
-    if(status === "Active"){
+async function getStaffByStatus(req, res) {
+    const { status, search } = req.query
+    let filter = { role: "lab" }
+
+    if (status === "Active") {
         filter.status = "Active"
-    }else if(status === "Inactive"){
+    } else if (status === "Inactive") {
         filter.status = "Inactive"
     }
-    
-    if(search){
+
+    if (search) {
         filter.username = {
             $regex: "^" + search,
-            $options: "i"   
+            $options: "i"
         }
     }
     const allStaff = await User.find(filter).select("-password")
-    return res.status(200).json({message: "Here are all staff list", countStaff:allStaff.length ,allStaff: allStaff})
-    
+    return res.status(200).json({ message: "Here are all staff list", countStaff: allStaff.length, allStaff: allStaff })
+
 }
 
 //Handle Staff Status------------------------------------------------------------------------------------------------------------------------------------
 
-async function handleStaffStatus(req,res){
-    const {id, status} = req.body
+async function handleStaffStatus(req, res) {
+    const { id, status } = req.body
 
     if (!id || !status) {
         return res.status(400).json({ message: "Missing id or status" })
     }
 
-        await User.findByIdAndUpdate(
-            id,
-            {status},
-            {new: true}
-        )
-        console.log({message: `Staff ${status}`})
-        return res.status(200).json({message: `Staff ${status}`})
-    
+    await User.findByIdAndUpdate(
+        id,
+        { status },
+        { new: true }
+    )
+    console.log({ message: `Staff ${status}` })
+    return res.status(200).json({ message: `Staff ${status}` })
+
 
 }
 
 // Find Staff------------------------------------------------------------------------------------------
 
-async function findStaff(req,res){
-    const {findStaff} = req.body
+async function findStaff(req, res) {
+    const { findStaff } = req.body
 
-    const found = await User.find({username: findStaff})
-    console.log("Foud",found);
-    
-    if(found.length === 0) return res.status(404).json({message: "No username found"})
+    const found = await User.find({ username: findStaff })
+    console.log("Foud", found);
 
-        console.log({message: "Username Found", foundStaff: found});
-        return res.status(200).json({message: "Username Found", foundStaff: found})
-        
+    if (found.length === 0) return res.status(404).json({ message: "No username found" })
+
+    console.log({ message: "Username Found", foundStaff: found });
+    return res.status(200).json({ message: "Username Found", foundStaff: found })
+
 }
 
 // Edit Staff------------------------------------------------------------------------------------------------------------------------------------------------
 
-async function editStaff(req,res){
-    const {id} = req.params
+async function editStaff(req, res) {
+    const { id } = req.params
     const { username, email, branchName, contactNumber, password } = req.body
 
     const updateData = {
@@ -162,67 +161,77 @@ async function editStaff(req,res){
         contactNumber
     }
 
-    if(password && password.trim() !== ""){
-        const hashedPassoword = await bcrypt.hash(password,10)
+    if (password && password.trim() !== "") {
+        const hashedPassoword = await bcrypt.hash(password, 10)
         updateData.password = hashedPassoword
     }
 
     await User.findByIdAndUpdate(
         id,
         updateData,
-        {new: true}
+        { new: true }
     ).select("-password")
 
-    return res.status(200).json({message: "Staff updated successfuly",type: "success"})
+    return res.status(200).json({ message: "Staff updated successfuly", type: "success" })
 
-}   
+}
 
 // Get Staff by ID--------------------------------------------------------------------------------------------------------------
 
 async function getStaffById(req, res) {
-  const { id } = req.params
+    const { id } = req.params
 
-  const staff = await User.findById(id).select("-password")
+    const staff = await User.findById(id).select("-password")
 
-  if (!staff) {
-    return res.status(404).json({ message: "Staff not found" })
-  }
+    if (!staff) {
+        return res.status(404).json({ message: "Staff not found" })
+    }
 
-  res.status(200).json({ staff })
+    res.status(200).json({ staff })
 }
 
 
 //LogOut User-------------------------------------------------------------------------------------------------------------------------------
 
-async function logoutUser(req,res){
+async function logoutUser(req, res) {
     res.clearCookie("refreshToken")
-    res.json({message:"Successfully logout"})
+    res.json({ message: "Successfully logout" })
 }
 
 //Refresh Access Token------------------------------------------------------------------------------------------------------------------------------
 
-async function refreshAccessToken(req,res){
+async function refreshAccessToken(req, res) {
     const refreshToken = req.cookies.refreshToken
-    if(!refreshToken) return res.status(401).json({message: "No refresh Token"})
 
-        try {
-            const decoded = verifyToken(refreshToken)
-            const newAccessToken = generaetAccessToken(decoded)
-            return res.json({accessToken: newAccessToken, username: decoded.username, role: decoded.role})
-        } catch (error) {
-            console.log("Error in refreshAccessToken", error);
+    if (!refreshToken) return res.status(401).json({ message: "No refresh Token" })
+
+    const decoded = verifyToken(refreshToken)
+    if (decoded) {
+        if (!decoded) {
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "None",
+                secure: false
+            })
+
+            return res.status(401).json({
+                message: "Refresh token expired"
+            })
         }
+        const newAccessToken = generaetAccessToken(decoded)
+        return res.json({ accessToken: newAccessToken, username: decoded.username, role: decoded.role })
+    }
 }
 
-module.exports = {
-    handleUserSignIn,
-    handleUserLogin,
-    createLabTech,
-    getStaffByStatus,
-    handleStaffStatus,
-    findStaff,
-    editStaff,
-    getStaffById,
-    logoutUser,
-    refreshAccessToken
-}
+    module.exports = {
+        handleUserSignIn,
+        handleUserLogin,
+        createLabTech,
+        getStaffByStatus,
+        handleStaffStatus,
+        findStaff,
+        editStaff,
+        getStaffById,
+        logoutUser,
+        refreshAccessToken
+    }

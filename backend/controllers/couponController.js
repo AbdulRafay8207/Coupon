@@ -53,33 +53,33 @@ async function generateCoupon(req, res) {
 // Validating coupons-------------------------------------------------------------------------------------------
 
 async function validateCoupon(req, res) {
-    const {  secret } = req.body
-    const filteredCoupon = await coupon.findOne({secret})
+    const { secret } = req.body
+    const filteredCoupon = await coupon.findOne({ secret })
 
 
     if (!filteredCoupon) {
         console.log({ message: "Invalid Coupon" });
-        return res.json({ message: "Invalid Coupon", type:"error",scannedCoupon: filteredCoupon  })
+        return res.json({ message: "Invalid Coupon", type: "error", scannedCoupon: filteredCoupon })
     }
     if (filteredCoupon.isCancelled) {
         console.log({ message: "Your Coupon is cancelled" });
-        return res.json({ message: "Your Coupon is cancelled", type:"error",scannedCoupon: filteredCoupon  })
+        return res.json({ message: "Your Coupon is cancelled", type: "error", scannedCoupon: filteredCoupon })
 
     }
     if (filteredCoupon.isUsed) {
         console.log({ message: "Coupon is already used" });
-        return res.json({ message: "Coupon is already used", type:"error",scannedCoupon: filteredCoupon })
+        return res.json({ message: "Coupon is already used", type: "error", scannedCoupon: filteredCoupon })
     }
     const today = new Date()
     const fromData = new Date(filteredCoupon.validFrom)
     const toData = new Date(filteredCoupon.validTo)
     if (today > toData) {
         console.log({ message: "Coupon is expired" });
-        return res.json({ message: "Coupon is expired", type:"error",scannedCoupon: filteredCoupon  })
+        return res.json({ message: "Coupon is expired", type: "error", scannedCoupon: filteredCoupon })
     }
 
     console.log("filtered coupon", filteredCoupon);
-    
+
     return res.json({
         message: "Scanned coupon result",
         type: "success",
@@ -89,19 +89,19 @@ async function validateCoupon(req, res) {
 
 //Redeem Coupon------------------------------------------------------------------------------------------------------------
 
-async function redeemCoupon(req,res) {
-    const {id} = req.body
+async function redeemCoupon(req, res) {
+    const { id } = req.body
     const searchCoupon = await coupon.findById(id)
 
     if (!searchCoupon) {
-        return res.json({ message: "Invalid Coupon", type:"error"})
+        return res.json({ message: "Invalid Coupon", type: "error" })
     }
     if (searchCoupon.isCancelled) {
-        return res.json({ message: "Your Coupon is cancelled", type:"error" })
+        return res.json({ message: "Your Coupon is cancelled", type: "error" })
 
     }
     if (searchCoupon.isUsed) {
-        return res.json({ message: "Coupon is already used", type:"error"})
+        return res.json({ message: "Coupon is already used", type: "error" })
     }
 
     searchCoupon.isUsed = true
@@ -109,7 +109,7 @@ async function redeemCoupon(req,res) {
     searchCoupon.usedBy = req.user._id
     searchCoupon.save()
 
-    return res.json({message: "Redeem successfully", type:"success"})
+    return res.json({ message: "Redeem successfully", type: "success" })
 
 }
 
@@ -130,13 +130,13 @@ async function cancelCoupon(req, res) {
         console.log({ message: `Coupon ${secret} is successfully cancelled` });
         return res.json({ message: `Coupon ${secret} is successfully cancelled` })
     }
-    if(sponsoredName){
+    if (sponsoredName) {
         const coupons = await coupon.updateMany({
-            sponsoredName: sponsoredName, isUsed: false, isCancelled: false, validTo: {$gte: new Date()} 
+            sponsoredName: sponsoredName, isUsed: false, isCancelled: false, validTo: { $gte: new Date() }
         },
-        {$set: {isCancelled: true}}
+            { $set: { isCancelled: true } }
         )
-        return res.status(200).json({message:`All Coupons of ${sponsoredName} successfully cancelled`})
+        return res.status(200).json({ message: `All Coupons of ${sponsoredName} successfully cancelled` })
     }
 
 }
@@ -230,16 +230,21 @@ async function testCouponStatus(req, res) {
                         }
                     }
                 }
+            },
+
+            // 🔥 ADD THIS
+            {
+                $sort: { _id: 1 }   // alphabetical sponsoredName
             }
         ])
         return res.json({
-        count: summary.length,
-        summary: summary
+            count: summary.length,
+            summary: summary
         })
     } catch (error) {
         console.log("Error in aggregate", error);
     }
-    return res.json({message: "something wrong"})
+    return res.json({ message: "something wrong" })
 }
 
 // Show all coupons---------------------------------------------------CHANGE NEED-----------------------------------------------------------------------------
@@ -251,14 +256,14 @@ async function allCoupons(req, res) {
 
 //Sponsored Details--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-async function sponsoredDetails(req,res) {
-    const {sponsoredName, type, search} = req.query
+async function sponsoredDetails(req, res) {
+    const { sponsoredName, type, search } = req.query
     const today = new Date()
 
     let filter = {}
-    if(sponsoredName){
+    if (sponsoredName) {
         filter.sponsoredName = sponsoredName
-    } 
+    }
 
     if (type === "active") {
         filter.isCancelled = false
@@ -274,16 +279,16 @@ async function sponsoredDetails(req,res) {
         filter.isUsed = true
     }
 
-    if(search){
+    if (search) {
         filter.secret = {
             $regex: "^" + search,
-            $options: "i"   
+            $options: "i"
         }
     }
-    
+
     const sponsoredCoupons = await coupon.find(filter)
 
-    return res.status(200).json({message: "Sponsored Details", sponsoredDetails: sponsoredCoupons})
+    return res.status(200).json({ message: "Sponsored Details", sponsoredDetails: sponsoredCoupons })
 }
 
 
@@ -318,33 +323,33 @@ async function findCouponBySecret(req, res) {
 
 // Delete Sponsored------------------------------------------------------------------------------------------------------------------------
 
-async function deleteSponsored(req,res) {
-    const {sponsoredName} = req.body
-    await coupon.deleteMany({sponsoredName})
-    return res.status(200).json({message: "Sponsored Deleted"})
+async function deleteSponsored(req, res) {
+    const { sponsoredName } = req.body
+    await coupon.deleteMany({ sponsoredName })
+    return res.status(200).json({ message: "Sponsored Deleted" })
 
 }
 
 // Lab Staff Dashboard----------------------------------------------------------------------------------------
 
-async function labStaffDashboard(req,res){
+async function labStaffDashboard(req, res) {
     console.log("piece of human shit");
-    
+
     const userId = req.user._id
     console.log("THIS IS USER ID", userId);
-    
-    const {from ,to} = req.query
+
+    const { from, to } = req.query
 
     let filter = {
         usedBy: userId,
         isUsed: true
     }
-    if(from && to){
+    if (from && to) {
         const start = new Date(from)
-        start.setHours(0,0,0,0)
+        start.setHours(0, 0, 0, 0)
 
         const end = new Date(to)
-        end.setHours(23,59,59,999)
+        end.setHours(23, 59, 59, 999)
         filter.usedAt = {
             $gte: start,
             $lte: end

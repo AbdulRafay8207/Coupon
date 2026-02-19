@@ -36,6 +36,7 @@ const AddLabStaff = () => {
                 headers: getAuthHeader(auth.accessToken),
                 body: JSON.stringify(form)
             }, setAuth, navigate)
+            if(!response) return
             const data = await response.json()
             setMessageType(data.type)
             setMessage(data.message)

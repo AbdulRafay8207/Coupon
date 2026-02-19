@@ -3,6 +3,7 @@ const User = require("../models/UsersModel")
 
 async function restrictLoggedInUserOnly(req,res,next){
     const authHeader = req.headers.authorization
+
     
     if(!authHeader) return res.status(401).json({message: "Unauthorized"})
 
@@ -10,7 +11,7 @@ async function restrictLoggedInUserOnly(req,res,next){
 
     const decoded = verifyToken(accessToken)
 
-    if(!decoded) return res.status(401).json({message: "Invalid or Expired token"})
+    if(!decoded) return res.status(401).json({message: "Invalid or Expired Session"})
 
     const isActiveUser = await User.findById(decoded._id)
 

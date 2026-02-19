@@ -62,6 +62,7 @@ const Login = () => {
         <img src={logo} alt="bait-us-salam logo" />
         <h1>Login</h1>
         {message && <p className="error-message">{message}</p>}
+        {auth.message && <p className="error-message">{auth.message}</p>}
         <form className="login-form" onSubmit={handleSubmit}>
 
           <div className={message === "Invalid username or password" ? "incorrect" : message === "Email is required" ? "incorrect" : ""}>

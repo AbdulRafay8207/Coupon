@@ -6,7 +6,8 @@ export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({
         accessToken: null,
         username: null,
-        role: null
+        role: null,
+        message: ""
     })
     const [loading, setLoading] = useState(true)
 
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
         restoreSession()
     }, [])
 
-    if (loading) return <div className="spinner">Loading...</div>
+    if (loading) return <div><span className="spinner"></span><p>Loading...</p></div>
 
     return (
         <AuthContext.Provider value={{ auth, setAuth }}>
