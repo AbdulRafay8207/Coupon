@@ -52,8 +52,8 @@ async function handleUserLogin(req, res) {
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "Lax",
+        secure: "isProd",
+        sameSite: "None",
         maxAge: 1000 * 60 * 60 * 1
     })
 
